@@ -1,0 +1,39 @@
+[
+  {
+    "id": 1,
+    "name": "Diwali (Festival of Lights)",
+    "date": "2026-11-08",
+    "day": "Sunday",
+    "days_remaining": 6,
+    "type": "Public Holiday",
+    "icon": "sparkles"
+  },
+  {
+    "id": 2,
+    "name": "Guru Nanak Jayanti",
+    "date": "2026-11-24",
+    "day": "Tuesday",
+    "days_remaining": 22,
+    "type": "National Holiday",
+    "icon": "moon"
+  },
+  {
+    "id": 3,
+    "name": "Christmas Day",
+    "date": "2026-12-25",
+    "day": "Friday",
+    "days_remaining": 53,
+    "type": "Public Holiday",
+    "icon": "gift"
+  },
+  {
+    "id": 4,
+    "name": "New Year's Day",
+    "date": "2027-01-01",
+    "day": "Friday",
+    "days_remaining": 60,
+    "type": "Company Holiday",
+    "icon": "party"
+  }
+]
+

@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "name": "Sarah Jenkins",
+    "email": "sarah.jenkins@essane.com",
+    "mobile": "+91 98765 43210",
+    "employee_code": "ESS-0142",
+    "role": "employee",
+    "designation": "Senior Fullstack Engineer",
+    "department": "Engineering",
+    "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+    "joining_date": "2023-03-15",
+    "shift_timing": "09:30 AM - 06:30 PM",
+    "github_username": "sarah-essane"
+  },
+  {
+    "id": 2,
+    "name": "Marcus Vance",
+    "email": "marcus.vance@essane.com",
+    "mobile": "+91 98123 45678",
+    "employee_code": "ESS-0001",
+    "role": "admin",
+    "designation": "Chief Operating Officer & Director",
+    "department": "Executive Leadership",
+    "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+    "joining_date": "2020-01-10",
+    "shift_timing": "09:00 AM - 07:00 PM",
+    "github_username": "marcus-v"
+  }
+]
+

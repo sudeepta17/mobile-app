@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "title": "Third-party Push Notification Certificate Renewal",
+    "description": "APNs production auth key is nearing expiry in 14 days. Need DevOps admin approval to regenerate in Apple Developer portal.",
+    "project_id": 101,
+    "project_title": "Essane Global Portal & Mobile Redesign",
+    "status": "pending",
+    "priority": "critical",
+    "created_by": "Sarah Jenkins",
+    "created_at": "2026-11-01T10:15:00Z",
+    "replies_count": 2,
+    "latest_reply": "DevOps lead notified; waiting on Apple Developer access permission."
+  },
+  {
+    "id": 2,
+    "title": "Gym biometric hardware API timeout on check-ins",
+    "description": "The local attendance gateway occasionally responds with 504 during morning rush hour (09:15 - 09:45 AM).",
+    "project_id": 102,
+    "project_title": "AI Knowledge Engine & Whiteboard",
+    "status": "in_review",
+    "priority": "high",
+    "created_by": "Alex Rivera",
+    "created_at": "2026-10-29T08:30:00Z",
+    "replies_count": 4,
+    "latest_reply": "Buffer queue added in mobile frontend to retry automatically."
+  },
+  {
+    "id": 3,
+    "title": "Staging DB connection pool starvation",
+    "description": "Load test on payslip generation consumed all available PDO connections.",
+    "project_id": 103,
+    "project_title": "Automated Cloud Infrastructure & CI/CD 2.0",
+    "status": "resolved",
+    "priority": "medium",
+    "created_by": "Devin Patel",
+    "created_at": "2026-10-20T14:00:00Z",
+    "replies_count": 5,
+    "latest_reply": "Increased max_connections to 350 and tuned pooling parameters."
+  }
+]
+

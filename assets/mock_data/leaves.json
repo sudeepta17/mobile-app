@@ -1,0 +1,72 @@
+{
+  "summary": {
+    "total_allowed": 26,
+    "taken": 5,
+    "pending": 1,
+    "remaining": 26
+  },
+  "types": [
+    {
+      "id": 1,
+      "name": "Casual leave",
+      "code": "Casual",
+      "allowed": 14,
+      "used": 2,
+      "pending": 0,
+      "remaining": 12
+    },
+    {
+      "id": 2,
+      "name": "Sick leave",
+      "code": "Sick",
+      "allowed": 7,
+      "used": 1,
+      "pending": 1,
+      "remaining": 6
+    },
+    {
+      "id": 3,
+      "name": "Earned leave",
+      "code": "Earned",
+      "allowed": 11,
+      "used": 3,
+      "pending": 0,
+      "remaining": 8
+    }
+  ],
+  "history": [
+    {
+      "id": 101,
+      "leave_type": "Casual leave",
+      "from_date": "2026-10-20",
+      "to_date": "2026-10-21",
+      "days": 2,
+      "reason": "Personal time off",
+      "status": "approved",
+      "applied_on": "2026-10-18",
+      "reviewer_comment": null
+    },
+    {
+      "id": 102,
+      "leave_type": "Sick leave",
+      "from_date": "2026-11-05",
+      "to_date": "2026-11-05",
+      "days": 1,
+      "reason": "Doctor appointment",
+      "status": "pending",
+      "applied_on": "2026-11-02",
+      "reviewer_comment": null
+    },
+    {
+      "id": 103,
+      "leave_type": "Earned leave",
+      "from_date": "2026-09-01",
+      "to_date": "2026-09-03",
+      "days": 3,
+      "reason": "Annual trip",
+      "status": "rejected",
+      "applied_on": "2026-08-25",
+      "reviewer_comment": "Peak delivery window conflict"
+    }
+  ]
+}

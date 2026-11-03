@@ -1,0 +1,70 @@
+{
+  "today": {
+    "date": "2026-11-02",
+    "is_checked_in": true,
+    "check_in_time": "09:28 AM",
+    "check_out_time": null,
+    "shift": "Standard Shift (09:30 AM - 06:30 PM)",
+    "worked_hours": "4h 12m",
+    "status": "on_time",
+    "gym_checked_in": true,
+    "gym_check_in_time": "07:15 AM",
+    "gym_streak": 14
+  },
+  "stats": {
+    "working_days": 22,
+    "present_days": 21,
+    "leaves_taken": 1,
+    "late_arrivals": 0,
+    "overtime_hours": "6.5 hrs",
+    "gym_visits_month": 18
+  },
+  "recent_logs": [
+    {
+      "date": "2026-11-02",
+      "day": "Monday",
+      "check_in": "09:28 AM",
+      "check_out": "--:--",
+      "hours": "4h 12m",
+      "status": "present",
+      "gym": true
+    },
+    {
+      "date": "2026-10-31",
+      "day": "Friday",
+      "check_in": "09:22 AM",
+      "check_out": "06:45 PM",
+      "hours": "9h 23m",
+      "status": "present",
+      "gym": true
+    },
+    {
+      "date": "2026-10-30",
+      "day": "Thursday",
+      "check_in": "09:31 AM",
+      "check_out": "06:35 PM",
+      "hours": "9h 04m",
+      "status": "present",
+      "gym": false
+    },
+    {
+      "date": "2026-10-29",
+      "day": "Wednesday",
+      "check_in": "09:15 AM",
+      "check_out": "07:10 PM",
+      "hours": "9h 55m",
+      "status": "present",
+      "gym": true
+    },
+    {
+      "date": "2026-10-28",
+      "day": "Tuesday",
+      "check_in": "09:25 AM",
+      "check_out": "06:30 PM",
+      "hours": "9h 05m",
+      "status": "present",
+      "gym": true
+    }
+  ]
+}
+

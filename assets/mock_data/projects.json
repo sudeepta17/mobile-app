@@ -1,0 +1,113 @@
+[
+  {
+    "id": 101,
+    "title": "Essane Global Portal & Mobile Redesign",
+    "code": "PRJ-EGP-24",
+    "description": "Next-generation company-wide portal and cross-platform native mobile experience with Apple-grade aesthetics.",
+    "status": "in_progress",
+    "priority": "critical",
+    "progress": 78,
+    "start_date": "2026-08-01",
+    "due_date": "2026-12-15",
+    "client": "Essane Core",
+    "lead_name": "Sarah Jenkins",
+    "team_count": 8,
+    "tasks_total": 34,
+    "tasks_completed": 26,
+    "tags": ["Flutter", "UI/UX", "iOS", "Android"],
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Design token architecture & Dark mode palette",
+        "description": "Establish Phoenix slate dark mode and pure light mode tokens.",
+        "status": "completed",
+        "priority": "high",
+        "due_date": "2026-09-10",
+        "assignee": "Sarah Jenkins"
+      },
+      {
+        "id": 2,
+        "title": "Flutter widget foundation & navigation shell",
+        "description": "Implement iOS frosted bottom bar, sliver scaffolds, and safe area layouts.",
+        "status": "completed",
+        "priority": "critical",
+        "due_date": "2026-10-05",
+        "assignee": "Sarah Jenkins"
+      },
+      {
+        "id": 3,
+        "title": "Attendance punch clock & geofence indicator",
+        "description": "Smooth swipe/tap to punch in with real-time haptic feedback.",
+        "status": "in_progress",
+        "priority": "high",
+        "due_date": "2026-11-15",
+        "assignee": "Sarah Jenkins"
+      },
+      {
+        "id": 4,
+        "title": "Payroll payslip visualizer & PDF renderer",
+        "description": "Detailed salary breakdown with tax computations and export action.",
+        "status": "todo",
+        "priority": "medium",
+        "due_date": "2026-11-28",
+        "assignee": "Alex Rivera"
+      }
+    ]
+  },
+  {
+    "id": 102,
+    "title": "AI Knowledge Engine & Whiteboard",
+    "code": "PRJ-AIK-26",
+    "description": "Internal collaborative whiteboard and generative summary assistant for engineering architecture.",
+    "status": "in_progress",
+    "priority": "high",
+    "progress": 55,
+    "start_date": "2026-09-15",
+    "due_date": "2026-12-30",
+    "client": "Internal R&D",
+    "lead_name": "Devin Patel",
+    "team_count": 5,
+    "tasks_total": 22,
+    "tasks_completed": 12,
+    "tags": ["AI", "Canvas", "WebSockets"],
+    "tasks": [
+      {
+        "id": 5,
+        "title": "Vector embedding search integration",
+        "description": "Sub-millisecond retrieval of meeting notes and architecture docs.",
+        "status": "in_progress",
+        "priority": "high",
+        "due_date": "2026-11-20",
+        "assignee": "Sarah Jenkins"
+      },
+      {
+        "id": 6,
+        "title": "Real-time canvas sync latency reduction",
+        "description": "Optimize OT / CRDT engine for under 16ms render intervals.",
+        "status": "todo",
+        "priority": "high",
+        "due_date": "2026-12-05",
+        "assignee": "Devin Patel"
+      }
+    ]
+  },
+  {
+    "id": 103,
+    "title": "Automated Cloud Infrastructure & CI/CD 2.0",
+    "code": "PRJ-OPS-09",
+    "description": "Zero-downtime VPS deployment and multi-region staging environment orchestration.",
+    "status": "completed",
+    "priority": "medium",
+    "progress": 100,
+    "start_date": "2026-05-01",
+    "due_date": "2026-08-30",
+    "client": "Platform Ops",
+    "lead_name": "Elena Rostova",
+    "team_count": 4,
+    "tasks_total": 18,
+    "tasks_completed": 18,
+    "tags": ["DevOps", "Docker", "Security"],
+    "tasks": []
+  }
+]
+

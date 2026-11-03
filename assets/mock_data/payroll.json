@@ -1,0 +1,84 @@
+{
+  "summary": {
+    "net_salary_current_month": 125000,
+    "allowance_approved": 8500,
+    "allowance_pending": 2200,
+    "advance_outstanding": 0
+  },
+  "payslips": [
+    {
+      "id": "PS-2026-10",
+      "month": "October 2026",
+      "gross_salary": 142000,
+      "deductions": 17000,
+      "net_pay": 125000,
+      "disbursement_date": "2026-10-31",
+      "status": "paid",
+      "breakdown": {
+        "basic_pay": 70000,
+        "hra": 35000,
+        "special_allowance": 25000,
+        "performance_bonus": 12000,
+        "provident_fund": 7000,
+        "professional_tax": 200,
+        "tds_tax": 9800
+      }
+    },
+    {
+      "id": "PS-2026-09",
+      "month": "September 2026",
+      "gross_salary": 142000,
+      "deductions": 17000,
+      "net_pay": 125000,
+      "disbursement_date": "2026-09-30",
+      "status": "paid",
+      "breakdown": {
+        "basic_pay": 70000,
+        "hra": 35000,
+        "special_allowance": 25000,
+        "performance_bonus": 12000,
+        "provident_fund": 7000,
+        "professional_tax": 200,
+        "tds_tax": 9800
+      }
+    }
+  ],
+  "allowances": [
+    {
+      "id": 1,
+      "category": "Broadband & Mobile",
+      "amount": 2200,
+      "submitted_date": "2026-11-01",
+      "description": "High-speed fiber bill for home office (Oct)",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "category": "Client Dinners & Travel",
+      "amount": 4500,
+      "submitted_date": "2026-10-22",
+      "description": "Taxi & client dinner during architectural sprint",
+      "status": "approved"
+    },
+    {
+      "id": 3,
+      "category": "Software & Tools",
+      "amount": 4000,
+      "submitted_date": "2026-10-10",
+      "description": "Annual IDE and profiling tool license",
+      "status": "approved"
+    }
+  ],
+  "advances": [
+    {
+      "id": 1,
+      "requested_amount": 25000,
+      "monthly_deduction": 5000,
+      "request_date": "2026-05-10",
+      "reason": "Home relocation & deposit advance",
+      "status": "repaid",
+      "remaining_balance": 0
+    }
+  ]
+}
+
