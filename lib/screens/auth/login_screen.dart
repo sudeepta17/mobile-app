@@ -33,9 +33,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   bool _showPassword = false;
   String? _errorMessage;
 
-  late final AnimationController _animController;
-  late final Animation<double> _cardFade;
-  late final Animation<Offset> _cardSlide;
+  AnimationController? _animController;
+  Animation<double>? _cardFade;
+  Animation<Offset>? _cardSlide;
 
   static const Color _brandColor = Color(0xFFE8590C); // Warm Deep Orange
   static const Color _btnGradientStart = Color(0xFFFA5E03); // Rich Orange
@@ -48,32 +48,40 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
+    _ensureAnimations();
+    _emailController.addListener(_onEmailChanged);
+  }
 
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
+  void _onEmailChanged() {
+    if (mounted) setState(() {});
+  }
 
-    _cardFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
-      ),
-    );
-    _cardSlide = Tween<Offset>(begin: const Offset(0, 16), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    _animController.forward();
-    _emailController.addListener(() => setState(() {}));
+  void _ensureAnimations() {
+    if (_animController == null) {
+      _animController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 700),
+      );
+      _cardFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _animController!,
+          curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
+        ),
+      );
+      _cardSlide = Tween<Offset>(begin: const Offset(0, 16), end: Offset.zero).animate(
+        CurvedAnimation(
+          parent: _animController!,
+          curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
+        ),
+      );
+      _animController!.forward();
+    }
   }
 
   @override
   void dispose() {
-    _animController.dispose();
+    _animController?.dispose();
+    _emailController.removeListener(_onEmailChanged);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -280,6 +288,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    _ensureAnimations();
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFF7F0), // Soft warm peach background
       body: Stack(
@@ -298,12 +308,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                 child: AnimatedBuilder(
-                  animation: _animController,
+                  animation: _animController ?? const AlwaysStoppedAnimation(1.0),
                   builder: (context, child) {
+                    final opacity = _cardFade?.value.clamp(0.0, 1.0) ?? 1.0;
+                    final offset = _cardSlide?.value ?? Offset.zero;
                     return Opacity(
-                      opacity: _cardFade.value.clamp(0.0, 1.0),
+                      opacity: opacity,
                       child: Transform.translate(
-                        offset: _cardSlide.value,
+                        offset: offset,
                         child: child,
                       ),
                     );
