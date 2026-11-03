@@ -2,11 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/navigation/app_routes.dart';
-import '../../core/theme/app_colors.dart';
 import '../../models/user_model.dart';
 import '../../state/auth_state.dart';
 
-/// Sign In Screen mirroring login.html & styles.css
+/// Pixel-perfect implementation of the Warm Light Login Screen
+/// matching media_1793698266948_8076b05a.jpg:
+/// - Flowing fluid warm orange ribbon wave background
+/// - Centered floating white card (radius 32, ambient warm shadow)
+/// - Brand mark + "Essane Global" in #E8590C
+/// - "Welcome back" (bold, 32px) & "Sign in to your workspace to continue."
+/// - "Work email" with mail leading icon, text, and green checkmark
+/// - "Password" with lock leading icon, dots, and eye toggle
+/// - "Forgot password?" right-aligned in #EA580C
+/// - "Sign in →" button with rich orange gradient and glowing shadow
+/// - Demo switcher: "Sarah (Staff)" and "Marcus (Admin)" with icons
+/// - "© 2026 Essane Global" centered copyright
 class LoginScreen extends StatefulWidget {
   final AuthState authState;
 
@@ -24,49 +34,41 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   String? _errorMessage;
 
   late final AnimationController _animController;
-  late final Animation<double> _brandFade;
-  late final Animation<Offset> _brandSlide;
-  late final Animation<double> _contentFade;
-  late final Animation<Offset> _contentSlide;
+  late final Animation<double> _cardFade;
+  late final Animation<Offset> _cardSlide;
+
+  static const Color _brandColor = Color(0xFFE8590C); // Warm Deep Orange
+  static const Color _btnGradientStart = Color(0xFFFA5E03); // Rich Orange
+  static const Color _btnGradientEnd = Color(0xFFD9480F); // Deep Terracotta
+  static const Color _labelColor = Color(0xFF374151); // Dark charcoal for labels
+  static const Color _mutedColor = Color(0xFF6B7280); // Cool medium grey
+  static const Color _fieldBg = Color(0xFFF9FAFB); // Clean soft field background
+  static const Color _fieldBorder = Color(0xFFE5E7EB); // Subtle outline
 
   @override
   void initState() {
     super.initState();
 
-    // Replicate .rise & .d2 animations from styles.css
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
 
-    _brandFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _cardFade = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animController,
-        curve: const Interval(0.0, 0.7, curve: Curves.easeOutCubic),
+        curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
       ),
     );
-    _brandSlide = Tween<Offset>(begin: const Offset(0, 14), end: Offset.zero).animate(
+    _cardSlide = Tween<Offset>(begin: const Offset(0, 16), end: Offset.zero).animate(
       CurvedAnimation(
         parent: _animController,
-        curve: const Interval(0.0, 0.7, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    // .d2 (delayed by ~0.12s)
-    _contentFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: const Interval(0.18, 0.95, curve: Curves.easeOutCubic),
-      ),
-    );
-    _contentSlide = Tween<Offset>(begin: const Offset(0, 14), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: const Interval(0.18, 0.95, curve: Curves.easeOutCubic),
+        curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
       ),
     );
 
     _animController.forward();
+    _emailController.addListener(() => setState(() {}));
   }
 
   @override
@@ -75,6 +77,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  bool get _isEmailValid {
+    final email = _emailController.text.trim();
+    return email.contains('@') && email.contains('.');
   }
 
   Future<void> _handleLogin() async {
@@ -119,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     });
   }
 
-  void _showForgotPasswordDialog(Color accent, Color bg, Color cardBg, Color borderCol2, Color textPrimary, Color textSoft) {
+  void _showForgotPasswordDialog() {
     HapticFeedback.lightImpact();
     final resetController = TextEditingController(text: _emailController.text);
 
@@ -127,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Dismiss',
-      barrierColor: Colors.black.withValues(alpha: 0.55),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       transitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (context, anim1, anim2) {
         return Center(
@@ -135,32 +142,38 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             color: Colors.transparent,
             child: Container(
               width: MediaQuery.of(context).size.width - 40,
-              constraints: const BoxConstraints(maxWidth: 420),
-              padding: const EdgeInsets.all(22),
+              constraints: const BoxConstraints(maxWidth: 400),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: bg,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: borderCol2, width: 1.0),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Reset password',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: textPrimary,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF111827),
                       fontFamily: 'Poppins',
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Enter your work email address and we will send you instructions to reset your password.',
+                  const Text(
+                    'Enter your work email address and we will send you a reset link.',
                     style: TextStyle(
                       fontSize: 13,
-                      color: textSoft,
+                      color: Color(0xFF6B7280),
                       fontFamily: 'Poppins',
                     ),
                   ),
@@ -169,15 +182,19 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     height: 52,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: cardBg,
+                      color: _fieldBg,
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: borderCol2, width: 1.0),
+                      border: Border.all(color: _fieldBorder, width: 1.0),
                     ),
                     alignment: Alignment.center,
                     child: TextField(
                       controller: resetController,
-                      style: TextStyle(fontSize: 15, color: textPrimary, fontFamily: 'Poppins'),
-                      cursorColor: accent,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Color(0xFF111827),
+                        fontFamily: 'Poppins',
+                      ),
+                      cursorColor: _brandColor,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -196,22 +213,22 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             decoration: BoxDecoration(
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: accent, width: 1.5),
+                              border: Border.all(color: _fieldBorder, width: 1.0),
                             ),
                             alignment: Alignment.center,
-                            child: Text(
+                            child: const Text(
                               'Cancel',
                               style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: accent,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF4B5563),
                                 fontFamily: 'Poppins',
                               ),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
@@ -225,15 +242,17 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           child: Container(
                             height: 48,
                             decoration: BoxDecoration(
-                              color: accent,
+                              gradient: const LinearGradient(
+                                colors: [_btnGradientStart, _btnGradientEnd],
+                              ),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             alignment: Alignment.center,
                             child: const Text(
                               'Send link',
                               style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.white,
                                 fontFamily: 'Poppins',
                               ),
@@ -261,102 +280,102 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
-    final cardBg = isDark ? AppColors.darkCard : AppColors.lightCard;
-    final borderCol2 = isDark ? AppColors.darkLine2 : AppColors.lightLine2;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textMuted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
-    final textSoft = isDark ? AppColors.darkSoft : AppColors.lightSoft;
-    final accent = isDark ? AppColors.accentDark : AppColors.accentLight;
-    final accentGlow = isDark ? AppColors.darkAccentGlow : AppColors.lightAccentSoft;
-
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: const Color(0xFFFFF7F0), // Soft warm peach background
       body: Stack(
         children: [
-          // Top Ambient Glow from styles.css: radial-gradient(circle at 85% 0, var(--accent-glow) 0%, transparent 65%)
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            height: 300,
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0.7, -1.0),
-                    radius: 0.85,
-                    colors: [
-                      accentGlow,
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.65],
-                  ),
-                ),
-              ),
+          // 1. Organic Fluid Ribbon Background Waves
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _FluidRibbonPainter(),
             ),
           ),
 
-          // Main Page Content (.app > .page in login.html)
+          // 2. Main Scrollable View with Floating Glass Card
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 1. Brand Row (login.html line 22: <div class="brand rise">...<svg>...<div class="a">Essane</div><div class="b">Global</div></div>)
-                      AnimatedBuilder(
-                        animation: _animController,
-                        builder: (context, child) {
-                          return Opacity(
-                            opacity: _brandFade.value.clamp(0.0, 1.0),
-                            child: Transform.translate(
-                              offset: _brandSlide.value,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Row(
+                child: AnimatedBuilder(
+                  animation: _animController,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _cardFade.value.clamp(0.0, 1.0),
+                      child: Transform.translate(
+                        offset: _cardSlide.value,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.96),
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          // Deep ambient warm shadow matching the image
+                          BoxShadow(
+                            color: const Color(0xFFEA580C).withValues(alpha: 0.12),
+                            blurRadius: 40,
+                            offset: const Offset(0, 18),
+                            spreadRadius: 2,
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 20,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 34),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // --- Brand Logo Row: SVG Mark + "Essane Global" ---
+                          Row(
                             mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // SVG geometric mark (width: 34, height: 64, viewBox: 10 0 160 300)
+                              // SVG Geometric Mark (width 36, height 68)
                               SizedBox(
-                                width: 34,
-                                height: 64,
+                                width: 36,
+                                height: 68,
                                 child: CustomPaint(
-                                  painter: _EssaneMarkPainter(color: accent),
+                                  painter: _EssaneMarkPainter(color: _brandColor),
                                 ),
                               ),
-                              const SizedBox(width: 10),
-                              // .col: .a "Essane" & .b "Global"
+                              const SizedBox(width: 12),
+                              // "Essane" & "Global"
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
-                                children: [
+                                children: const [
                                   Text(
                                     'Essane',
                                     style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.0,
-                                      color: accent,
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.05,
+                                      color: _brandColor,
                                       fontFamily: 'Poppins',
+                                      letterSpacing: -0.3,
                                     ),
                                   ),
+                                  SizedBox(height: 2),
                                   Text(
                                     'Global',
                                     style: TextStyle(
                                       fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      height: 1.2,
-                                      color: accent,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.1,
+                                      color: _brandColor,
                                       fontFamily: 'Poppins',
                                     ),
                                   ),
@@ -364,320 +383,383 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               ),
                             ],
                           ),
-                        ),
-                      ),
 
-                      // 2. Heading Block & Form animated with .rise.d2
-                      AnimatedBuilder(
-                        animation: _animController,
-                        builder: (context, child) {
-                          return Opacity(
-                            opacity: _contentFade.value.clamp(0.0, 1.0),
-                            child: Transform.translate(
-                              offset: _contentSlide.value,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Heading Block (login.html line 31: <div class="col rise d2" style="margin-top:48px;gap:6px">)
-                            const SizedBox(height: 48),
-                            Text(
-                              'Welcome back',
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w600,
-                                color: textPrimary,
-                                height: 1.2,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Sign in to your workspace to continue.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: textMuted,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
+                          const SizedBox(height: 32),
 
-                            // Error Message Banner if any
-                            if (_errorMessage != null) ...[
-                              const SizedBox(height: 16),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: isDark ? AppColors.redSoft : const Color(0x1AC62828),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: isDark ? AppColors.red : const Color(0xFFC62828),
-                                    width: 1.0,
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      CupertinoIcons.exclamationmark_circle,
-                                      size: 16,
-                                      color: isDark ? AppColors.red : const Color(0xFFC62828),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        _errorMessage!,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: isDark ? AppColors.red : const Color(0xFFC62828),
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-
-                            // Form (login.html line 35: <form action="dashboard.html" class="col rise d2" style="margin-top:32px;gap:18px">)
-                            const SizedBox(height: 32),
-
-                            // Field 1: Work email (<div class="field"><label for="email">Work email</label>...)
-                            Text(
-                              'Work email',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: textSoft,
-                                fontFamily: 'Poppins',
-                              ),
+                          // --- Heading: "Welcome back" ---
+                          const Text(
+                            'Welcome back',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              height: 1.15,
+                              color: Color(0xFF111827),
+                              fontFamily: 'Poppins',
+                              letterSpacing: -0.5,
                             ),
-                            const SizedBox(height: 8),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // --- Subtitle: "Sign in to your workspace to continue." ---
+                          const Text(
+                            'Sign in to your workspace to continue.',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: _mutedColor,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+
+                          // Error Banner if needed
+                          if (_errorMessage != null) ...[
+                            const SizedBox(height: 16),
                             Container(
-                              height: 52,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                               decoration: BoxDecoration(
-                                color: cardBg,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: borderCol2, width: 1.0),
+                                color: const Color(0x15DC2626),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFDC2626), width: 1.0),
                               ),
-                              alignment: Alignment.center,
-                              child: TextField(
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                textInputAction: TextInputAction.next,
-                                cursorColor: accent,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: textPrimary,
-                                  fontFamily: 'Poppins',
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: 'you@company.com',
-                                  hintStyle: TextStyle(
-                                    fontSize: 15,
-                                    color: textMuted,
-                                    fontFamily: 'Poppins',
-                                  ),
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 18),
-
-                            // Field 2: Password (<div class="field"><label for="pw">Password</label>...)
-                            Text(
-                              'Password',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: textSoft,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              height: 52,
-                              padding: const EdgeInsets.only(left: 16, right: 8),
-                              decoration: BoxDecoration(
-                                color: cardBg,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: borderCol2, width: 1.0),
-                              ),
-                              alignment: Alignment.center,
                               child: Row(
                                 children: [
+                                  const Icon(
+                                    CupertinoIcons.exclamationmark_circle,
+                                    size: 16,
+                                    color: Color(0xFFDC2626),
+                                  ),
+                                  const SizedBox(width: 8),
                                   Expanded(
-                                    child: TextField(
-                                      controller: _passwordController,
-                                      obscureText: !_showPassword,
-                                      textInputAction: TextInputAction.done,
-                                      onSubmitted: (_) => _handleLogin(),
-                                      cursorColor: accent,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: textPrimary,
+                                    child: Text(
+                                      _errorMessage!,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xFFDC2626),
                                         fontFamily: 'Poppins',
                                       ),
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter your password',
-                                        hintStyle: TextStyle(
-                                          fontSize: 15,
-                                          color: textMuted,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      _showPassword
-                                          ? CupertinoIcons.eye_slash
-                                          : CupertinoIcons.eye,
-                                      size: 18,
-                                      color: textMuted,
-                                    ),
-                                    onPressed: () {
-                                      setState(() => _showPassword = !_showPassword);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Forgot password link (<a class="forgot" href="#">Forgot password?</a>)
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: GestureDetector(
-                                onTap: () => _showForgotPasswordDialog(
-                                  accent,
-                                  bg,
-                                  cardBg,
-                                  borderCol2,
-                                  textPrimary,
-                                  textSoft,
-                                ),
-                                child: Container(
-                                  constraints: const BoxConstraints(minHeight: 44),
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    'Forgot password?',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: accent,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-
-                            // Sign In Button (<button class="btn" type="submit">Sign in</button>)
-                            GestureDetector(
-                              onTap: _isLoading ? null : _handleLogin,
-                              child: Container(
-                                width: double.infinity,
-                                height: 52,
-                                decoration: BoxDecoration(
-                                  color: accent,
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                alignment: Alignment.center,
-                                child: _isLoading
-                                    ? const CupertinoActivityIndicator(color: Colors.white)
-                                    : const Text(
-                                        'Sign in',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                              ),
-                            ),
-
-                            // Demo Accounts Switcher (subtle convenience for reviewers)
-                            const SizedBox(height: 24),
-                            Center(
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 6,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                alignment: WrapAlignment.center,
-                                children: [
-                                  Text(
-                                    'Demo:',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: textMuted,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () => _fillDemoUser(UserRole.employee),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: cardBg,
-                                        borderRadius: BorderRadius.circular(999),
-                                        border: Border.all(color: borderCol2, width: 0.8),
-                                      ),
-                                      child: Text(
-                                        'Sarah (Staff)',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500,
-                                          color: textSoft,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () => _fillDemoUser(UserRole.admin),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: cardBg,
-                                        borderRadius: BorderRadius.circular(999),
-                                        border: Border.all(color: borderCol2, width: 0.8),
-                                      ),
-                                      child: Text(
-                                        'Marcus (Admin)',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500,
-                                          color: textSoft,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
                                     ),
                                   ),
                                 ],
-                              ),
-                            ),
-
-                            // Copyright footer (<p class="sub" style="text-align:center;margin-top:48px;font-size:11px">© 2026 Essane Global</p>)
-                            const SizedBox(height: 48),
-                            Center(
-                              child: Text(
-                                '© 2026 Essane Global',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: textMuted,
-                                  fontFamily: 'Poppins',
-                                ),
                               ),
                             ),
                           ],
-                        ),
+
+                          const SizedBox(height: 26),
+
+                          // --- Field 1: Work email ---
+                          const Text(
+                            'Work email',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: _labelColor,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            height: 54,
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            decoration: BoxDecoration(
+                              color: _fieldBg,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: _fieldBorder, width: 1.0),
+                            ),
+                            alignment: Alignment.center,
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  CupertinoIcons.mail,
+                                  size: 19,
+                                  color: _mutedColor,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    textInputAction: TextInputAction.next,
+                                    cursorColor: _brandColor,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF111827),
+                                      fontFamily: 'Poppins',
+                                    ),
+                                    decoration: const InputDecoration(
+                                      hintText: 'you@company.com',
+                                      hintStyle: TextStyle(
+                                        fontSize: 15,
+                                        color: Color(0xFF9CA3AF),
+                                        fontFamily: 'Poppins',
+                                      ),
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.zero,
+                                    ),
+                                  ),
+                                ),
+                                if (_isEmailValid)
+                                  const Icon(
+                                    CupertinoIcons.checkmark,
+                                    size: 18,
+                                    color: Color(0xFF16A34A),
+                                  ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 18),
+
+                          // --- Field 2: Password ---
+                          const Text(
+                            'Password',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: _labelColor,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            height: 54,
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            decoration: BoxDecoration(
+                              color: _fieldBg,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: _fieldBorder, width: 1.0),
+                            ),
+                            alignment: Alignment.center,
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  CupertinoIcons.lock,
+                                  size: 19,
+                                  color: _mutedColor,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _passwordController,
+                                    obscureText: !_showPassword,
+                                    textInputAction: TextInputAction.done,
+                                    onSubmitted: (_) => _handleLogin(),
+                                    cursorColor: _brandColor,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      letterSpacing: 1.5,
+                                      color: Color(0xFF111827),
+                                      fontFamily: 'Poppins',
+                                    ),
+                                    decoration: const InputDecoration(
+                                      hintText: '••••••••••',
+                                      hintStyle: TextStyle(
+                                        fontSize: 15,
+                                        color: Color(0xFF9CA3AF),
+                                        letterSpacing: 2.0,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.zero,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                  icon: Icon(
+                                    _showPassword
+                                        ? CupertinoIcons.eye_slash
+                                        : CupertinoIcons.eye,
+                                    size: 20,
+                                    color: _mutedColor,
+                                  ),
+                                  onPressed: () {
+                                    setState(() => _showPassword = !_showPassword);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // --- Forgot password? (Right aligned in #EA580C) ---
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                              onTap: _showForgotPasswordDialog,
+                              child: Container(
+                                padding: const EdgeInsets.only(top: 10, bottom: 10, left: 10),
+                                child: const Text(
+                                  'Forgot password?',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: _brandColor,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // --- "Sign in →" Button with rich orange gradient ---
+                          GestureDetector(
+                            onTap: _isLoading ? null : _handleLogin,
+                            child: Container(
+                              width: double.infinity,
+                              height: 54,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    _btnGradientStart,
+                                    _btnGradientEnd,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _btnGradientEnd.withValues(alpha: 0.38),
+                                    blurRadius: 18,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              alignment: Alignment.center,
+                              child: _isLoading
+                                  ? const CupertinoActivityIndicator(color: Colors.white)
+                                  : Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Text(
+                                          'Sign in',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Icon(
+                                          CupertinoIcons.arrow_right,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 28),
+
+                          // --- Demo: Sarah (Staff) / Marcus (Admin) Switcher ---
+                          Center(
+                            child: Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              alignment: WrapAlignment.center,
+                              children: [
+                                const Text(
+                                  'Demo:',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                    color: _mutedColor,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => _fillDemoUser(UserRole.employee),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(color: _fieldBorder, width: 1.0),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Icon(
+                                          CupertinoIcons.person,
+                                          size: 15,
+                                          color: Color(0xFF374151),
+                                        ),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          'Sarah (Staff)',
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF374151),
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => _fillDemoUser(UserRole.admin),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(color: _fieldBorder, width: 1.0),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Icon(
+                                          CupertinoIcons.shield,
+                                          size: 15,
+                                          color: Color(0xFF374151),
+                                        ),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          'Marcus (Admin)',
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF374151),
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // --- Copyright footer: "© 2026 Essane Global" ---
+                          const Center(
+                            child: Text(
+                              '© 2026 Essane Global',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: _mutedColor,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -689,13 +771,104 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 }
 
-// Geometric SVG Mark Custom Painter matching login.html SVG:
-// <svg width="34" height="64" viewBox="10 0 160 300" role="img" aria-label="Essane Global mark">
-// <rect x="116" y="5" width="46" height="110" rx="2" fill="var(--accent)"/>
-// <rect x="116" y="195" width="46" height="100" rx="2" fill="var(--accent)"/>
-// <line x1="20" y1="80" x2="104" y2="128" stroke="var(--accent)" stroke-width="46"/>
-// <line x1="20" y1="230" x2="104" y2="182" stroke="var(--accent)" stroke-width="46"/>
-// </svg>
+/// Custom painter for the warm fluid organic waves/ribbons matching the screenshot background
+class _FluidRibbonPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // 1. Top-right sweeping amber/orange organic ribbon
+    final path1 = Path()
+      ..moveTo(w * 0.45, 0)
+      ..cubicTo(w * 0.70, h * 0.05, w * 0.95, h * 0.15, w, h * 0.35)
+      ..lineTo(w, 0)
+      ..close();
+
+    final paint1 = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomRight,
+        colors: [
+          const Color(0xFFFFA05C).withValues(alpha: 0.45),
+          const Color(0xFFEA580C).withValues(alpha: 0.25),
+          const Color(0xFFFFEDD5).withValues(alpha: 0.0),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, w, h * 0.45));
+    canvas.drawPath(path1, paint1);
+
+    // 2. Second overlapping ribbon in top-right
+    final path2 = Path()
+      ..moveTo(w * 0.65, 0)
+      ..cubicTo(w * 0.85, h * 0.10, w * 0.98, h * 0.22, w, h * 0.45)
+      ..lineTo(w, 0)
+      ..close();
+
+    final paint2 = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topRight,
+        end: Alignment.centerLeft,
+        colors: [
+          const Color(0xFFF97316).withValues(alpha: 0.35),
+          const Color(0xFFFB923C).withValues(alpha: 0.15),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromLTWH(w * 0.5, 0, w * 0.5, h * 0.5));
+    canvas.drawPath(path2, paint2);
+
+    // 3. Subtle curved wave edge line
+    final linePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..shader = LinearGradient(
+        colors: [
+          Colors.white.withValues(alpha: 0.6),
+          const Color(0xFFFB923C).withValues(alpha: 0.3),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromLTWH(w * 0.5, 0, w * 0.5, h * 0.4));
+
+    final pathLine = Path()
+      ..moveTo(w * 0.50, 0)
+      ..cubicTo(w * 0.72, h * 0.08, w * 0.92, h * 0.18, w, h * 0.38);
+    canvas.drawPath(pathLine, linePaint);
+
+    // 4. Bottom-left warm wave swoosh
+    final path3 = Path()
+      ..moveTo(0, h * 0.65)
+      ..cubicTo(w * 0.20, h * 0.75, w * 0.35, h * 0.88, w * 0.40, h)
+      ..lineTo(0, h)
+      ..close();
+
+    final paint3 = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.bottomLeft,
+        end: Alignment.topRight,
+        colors: [
+          const Color(0xFFF97316).withValues(alpha: 0.35),
+          const Color(0xFFFB923C).withValues(alpha: 0.18),
+          const Color(0xFFFFEDD5).withValues(alpha: 0.0),
+        ],
+      ).createShader(Rect.fromLTWH(0, h * 0.6, w * 0.5, h * 0.4));
+    canvas.drawPath(path3, paint3);
+
+    // 5. Subtle bottom-left wave edge line
+    final pathLine2 = Path()
+      ..moveTo(0, h * 0.70)
+      ..cubicTo(w * 0.22, h * 0.78, w * 0.32, h * 0.89, w * 0.38, h);
+    canvas.drawPath(pathLine2, linePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// Geometric SVG Mark Custom Painter matching login SVG geometry:
+/// ViewBox: (10, 0, 160, 300)
+/// - Rect 1: x="116" y="5" width="46" height="110" rx="2"
+/// - Rect 2: x="116" y="195" width="46" height="100" rx="2"
+/// - Line 1: line x1="20" y1="80" x2="104" y2="128" stroke-width="46"
+/// - Line 2: line x1="20" y1="230" x2="104" y2="182" stroke-width="46"
 class _EssaneMarkPainter extends CustomPainter {
   final Color color;
 
@@ -705,7 +878,6 @@ class _EssaneMarkPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.save();
 
-    // Transform viewBox: 10 0 160 300 into size
     final scaleX = size.width / 160.0;
     final scaleY = size.height / 300.0;
     canvas.scale(scaleX, scaleY);
@@ -735,10 +907,10 @@ class _EssaneMarkPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.butt;
 
-    // 3. Line 1: line x1="20" y1="80" x2="104" y2="128" stroke-width="46"
+    // 3. Line 1: line x1="20" y1="80" x2="104" y2="128"
     canvas.drawLine(const Offset(20, 80), const Offset(104, 128), strokePaint);
 
-    // 4. Line 2: line x1="20" y1="230" x2="104" y2="182" stroke-width="46"
+    // 4. Line 2: line x1="20" y1="230" x2="104" y2="182"
     canvas.drawLine(const Offset(20, 230), const Offset(104, 182), strokePaint);
 
     canvas.restore();
