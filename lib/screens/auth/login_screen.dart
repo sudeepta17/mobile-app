@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   static const Color _btnGradientEnd = Color(0xFFD9480F); // Deep Terracotta
   static const Color _labelColor = Color(0xFF374151); // Dark charcoal for labels
   static const Color _mutedColor = Color(0xFF6B7280); // Cool medium grey
-  static const Color _fieldBg = Color(0xFFF9FAFB); // Clean soft field background
+  static const Color _fieldBg = Colors.white; // Clean white field background
   static const Color _fieldBorder = Color(0xFFE5E7EB); // Subtle outline
 
   @override
@@ -322,30 +322,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   },
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 420),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.96),
-                        borderRadius: BorderRadius.circular(32),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          width: 1.5,
-                        ),
-                        boxShadow: [
-                          // Deep ambient warm shadow matching the image
-                          BoxShadow(
-                            color: const Color(0xFFEA580C).withValues(alpha: 0.12),
-                            blurRadius: 40,
-                            offset: const Offset(0, 18),
-                            spreadRadius: 2,
-                          ),
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 20,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 34),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,6 +454,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               color: _fieldBg,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(color: _fieldBorder, width: 1.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFEA580C).withValues(alpha: 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
                             alignment: Alignment.center,
                             child: Row(
@@ -541,6 +526,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               color: _fieldBg,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(color: _fieldBorder, width: 1.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFEA580C).withValues(alpha: 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
                             alignment: Alignment.center,
                             child: Row(
@@ -697,6 +689,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(color: _fieldBorder, width: 1.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.03),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
@@ -728,6 +727,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(color: _fieldBorder, width: 1.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: 0.03),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
