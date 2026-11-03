@@ -29,11 +29,21 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController(text: 'sarah.jenkins@essane.com');
   final _passwordController = TextEditingController(text: 'password123');
-  final _emailFocus = FocusNode();
-  final _passwordFocus = FocusNode();
+  FocusNode? _emailFocus;
+  FocusNode? _passwordFocus;
   bool _isLoading = false;
   bool _showPassword = false;
   String? _errorMessage;
+
+  FocusNode get _effectiveEmailFocus {
+    _emailFocus ??= FocusNode()..addListener(_onFocusChanged);
+    return _emailFocus!;
+  }
+
+  FocusNode get _effectivePasswordFocus {
+    _passwordFocus ??= FocusNode()..addListener(_onFocusChanged);
+    return _passwordFocus!;
+  }
 
   AnimationController? _animController;
   Animation<double>? _cardFade;
@@ -52,8 +62,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     super.initState();
     _ensureAnimations();
     _emailController.addListener(_onEmailChanged);
-    _emailFocus.addListener(_onFocusChanged);
-    _passwordFocus.addListener(_onFocusChanged);
+    _effectiveEmailFocus;
+    _effectivePasswordFocus;
   }
 
   void _onEmailChanged() {
@@ -90,10 +100,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   void dispose() {
     _animController?.dispose();
     _emailController.removeListener(_onEmailChanged);
-    _emailFocus.removeListener(_onFocusChanged);
-    _passwordFocus.removeListener(_onFocusChanged);
-    _emailFocus.dispose();
-    _passwordFocus.dispose();
+    _emailFocus?.removeListener(_onFocusChanged);
+    _passwordFocus?.removeListener(_onFocusChanged);
+    _emailFocus?.dispose();
+    _passwordFocus?.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -471,8 +481,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               color: _fieldBg,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: _emailFocus.hasFocus ? _brandColor : _fieldBorder,
-                                width: _emailFocus.hasFocus ? 1.5 : 1.0,
+                                color: (_emailFocus?.hasFocus ?? false) ? _brandColor : _fieldBorder,
+                                width: (_emailFocus?.hasFocus ?? false) ? 1.5 : 1.0,
                               ),
                               boxShadow: [
                                 BoxShadow(
@@ -493,7 +503,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextField(
-                                    focusNode: _emailFocus,
+                                    focusNode: _effectiveEmailFocus,
                                     controller: _emailController,
                                     keyboardType: TextInputType.emailAddress,
                                     textInputAction: TextInputAction.next,
@@ -554,8 +564,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               color: _fieldBg,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: _passwordFocus.hasFocus ? _brandColor : _fieldBorder,
-                                width: _passwordFocus.hasFocus ? 1.5 : 1.0,
+                                color: (_passwordFocus?.hasFocus ?? false) ? _brandColor : _fieldBorder,
+                                width: (_passwordFocus?.hasFocus ?? false) ? 1.5 : 1.0,
                               ),
                               boxShadow: [
                                 BoxShadow(
@@ -576,7 +586,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextField(
-                                    focusNode: _passwordFocus,
+                                    focusNode: _effectivePasswordFocus,
                                     controller: _passwordController,
                                     obscureText: !_showPassword,
                                     textInputAction: TextInputAction.done,
