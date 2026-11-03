@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:essane_management/core/navigation/app_routes.dart';
 import 'package:essane_management/main.dart';
 import 'package:essane_management/screens/auth/login_screen.dart';
 import 'package:essane_management/screens/leaves/leaves_screen.dart';
 import 'package:essane_management/screens/notifications/notifications_screen.dart';
 import 'package:essane_management/screens/profile/profile_screen.dart';
+import 'package:essane_management/screens/splash/splash_screen.dart';
 import 'package:essane_management/screens/tasks/my_tasks_screen.dart';
 import 'package:essane_management/screens/team/team_screen.dart';
 import 'package:essane_management/state/auth_state.dart';
@@ -22,6 +24,47 @@ void main() {
     ));
 
     expect(find.byType(EssaneMobileApp), findsOneWidget);
+  });
+
+  testWidgets('SplashScreen renders exact Light2.dc.html elements and navigates to LoginScreen', (WidgetTester tester) async {
+    final authState = AuthState();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        initialRoute: AppRoutes.splash,
+        routes: {
+          AppRoutes.splash: (context) => SplashScreen(authState: authState),
+          AppRoutes.login: (context) => LoginScreen(authState: authState),
+        },
+      ),
+    );
+    await tester.pump();
+
+    // 1. Brand Mark & Wordmarks
+    expect(find.text('Essane'), findsOneWidget);
+    expect(find.text('Global'), findsOneWidget);
+
+    // 2. Subtitle Tag
+    expect(find.text('COMPANY MANAGEMENT'), findsOneWidget);
+
+    // 3. Module Cards
+    expect(find.text('Dashboard'), findsOneWidget);
+    expect(find.text('Team'), findsOneWidget);
+    expect(find.text('Projects'), findsOneWidget);
+    expect(find.text('Reports'), findsOneWidget);
+
+    // 4. Loading Status & Copyright
+    expect(find.text('Loading your workspace'), findsOneWidget);
+    expect(find.text('© 2026 Essane Global'), findsOneWidget);
+
+    // 5. Tap anywhere on the splash screen to proceed immediately to LoginScreen
+    await tester.tap(find.byType(SplashScreen));
+    await tester.pumpAndSettle();
+
+    // Verify LoginScreen is now displayed
+    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('Sign in to your workspace to continue.'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
   });
 
   testWidgets('LeavesScreen renders exact leave.html structure', (WidgetTester tester) async {

@@ -62,10 +62,6 @@ class MockAuthService implements IAuthService {
 
   @override
   Future<UserModel?> getCurrentUser() async {
-    if (_currentUser == null) {
-      final users = await getDemoUsers();
-      _currentUser = users.first; // Default to employee
-    }
     return _currentUser;
   }
 
