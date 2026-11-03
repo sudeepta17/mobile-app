@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:essane_management/core/navigation/app_routes.dart';
 import 'package:essane_management/main.dart';
 import 'package:essane_management/screens/auth/login_screen.dart';
+import 'package:essane_management/screens/dashboard/employee_dashboard_screen.dart';
 import 'package:essane_management/screens/leaves/leaves_screen.dart';
 import 'package:essane_management/screens/notifications/notifications_screen.dart';
 import 'package:essane_management/screens/profile/profile_screen.dart';
@@ -65,6 +66,51 @@ void main() {
     expect(find.text('Welcome back'), findsOneWidget);
     expect(find.text('Sign in to your workspace to continue.'), findsOneWidget);
     expect(find.text('Sign in'), findsOneWidget);
+  });
+
+  testWidgets('EmployeeDashboardScreen renders management dashboard functionality', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(800, 3200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    final authState = AuthState();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: EmployeeDashboardScreen(authState: authState),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    // 1. Header & Greeting
+    expect(find.text('Sarah Jenkins'), findsOneWidget);
+
+    // 2. Metrics & Insights
+    expect(find.text('TOTAL REQUESTS'), findsOneWidget);
+    expect(find.text('PENDING').first, findsOneWidget);
+    expect(find.text('APPROVED').first, findsOneWidget);
+    expect(find.text('REJECTED').first, findsOneWidget);
+
+    // 3. Overview & Timeline
+    expect(find.text('PERSONAL TIMELINE'), findsOneWidget);
+    expect(find.text('Leave & Requests Overview'), findsOneWidget);
+
+    // 4. Quick Actions
+    expect(find.text('Quick Actions'), findsOneWidget);
+    expect(find.text('Blockers'), findsOneWidget);
+    expect(find.text('Apply Leave'), findsOneWidget);
+    expect(find.text('Allowance'), findsOneWidget);
+    expect(find.text('Salary Advance'), findsOneWidget);
+    expect(find.text('Attendance'), findsOneWidget);
+    expect(find.text('Gym Check-in'), findsOneWidget);
+
+    // 5. Personal Pulse & Recent Activity
+    expect(find.text('Personal Pulse'), findsOneWidget);
+    expect(find.text('Recent Activity'), findsOneWidget);
   });
 
   testWidgets('LeavesScreen renders exact leave.html structure', (WidgetTester tester) async {
