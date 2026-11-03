@@ -29,6 +29,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController(text: 'sarah.jenkins@essane.com');
   final _passwordController = TextEditingController(text: 'password123');
+  final _emailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
   bool _isLoading = false;
   bool _showPassword = false;
   String? _errorMessage;
@@ -50,9 +52,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     super.initState();
     _ensureAnimations();
     _emailController.addListener(_onEmailChanged);
+    _emailFocus.addListener(_onFocusChanged);
+    _passwordFocus.addListener(_onFocusChanged);
   }
 
   void _onEmailChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _onFocusChanged() {
     if (mounted) setState(() {});
   }
 
@@ -82,6 +90,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   void dispose() {
     _animController?.dispose();
     _emailController.removeListener(_onEmailChanged);
+    _emailFocus.removeListener(_onFocusChanged);
+    _passwordFocus.removeListener(_onFocusChanged);
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -205,6 +217,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       cursorColor: _brandColor,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        filled: false,
+                        fillColor: Colors.transparent,
                         isDense: true,
                         hintText: 'you@company.com',
                       ),
@@ -453,7 +470,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             decoration: BoxDecoration(
                               color: _fieldBg,
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: _fieldBorder, width: 1.0),
+                              border: Border.all(
+                                color: _emailFocus.hasFocus ? _brandColor : _fieldBorder,
+                                width: _emailFocus.hasFocus ? 1.5 : 1.0,
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: const Color(0xFFEA580C).withValues(alpha: 0.05),
@@ -473,6 +493,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextField(
+                                    focusNode: _emailFocus,
                                     controller: _emailController,
                                     keyboardType: TextInputType.emailAddress,
                                     textInputAction: TextInputAction.next,
@@ -491,6 +512,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                         fontFamily: 'Poppins',
                                       ),
                                       border: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      disabledBorder: InputBorder.none,
+                                      errorBorder: InputBorder.none,
+                                      focusedErrorBorder: InputBorder.none,
+                                      filled: false,
+                                      fillColor: Colors.transparent,
                                       isDense: true,
                                       contentPadding: EdgeInsets.zero,
                                     ),
@@ -525,7 +553,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             decoration: BoxDecoration(
                               color: _fieldBg,
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: _fieldBorder, width: 1.0),
+                              border: Border.all(
+                                color: _passwordFocus.hasFocus ? _brandColor : _fieldBorder,
+                                width: _passwordFocus.hasFocus ? 1.5 : 1.0,
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: const Color(0xFFEA580C).withValues(alpha: 0.05),
@@ -545,6 +576,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextField(
+                                    focusNode: _passwordFocus,
                                     controller: _passwordController,
                                     obscureText: !_showPassword,
                                     textInputAction: TextInputAction.done,
@@ -566,6 +598,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                         fontFamily: 'Poppins',
                                       ),
                                       border: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      disabledBorder: InputBorder.none,
+                                      errorBorder: InputBorder.none,
+                                      focusedErrorBorder: InputBorder.none,
+                                      filled: false,
+                                      fillColor: Colors.transparent,
                                       isDense: true,
                                       contentPadding: EdgeInsets.zero,
                                     ),
