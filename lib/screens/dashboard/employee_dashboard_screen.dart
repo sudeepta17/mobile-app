@@ -39,8 +39,10 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
   bool _isLoading = true;
   bool _isCheckedIn = false;
   String _checkInTimeStr = '';
-  late Timer _clockTimer;
-  DateTime _currentTime = DateTime.now();
+  Timer? _clockTimer;
+  DateTime? _currentTime;
+
+  DateTime get _now => _currentTime ?? DateTime.now();
 
   static final NumberFormat _currencyFormat = NumberFormat.currency(
     locale: 'en_IN',
@@ -51,15 +53,20 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
   @override
   void initState() {
     super.initState();
+    _initTimer();
     _loadDashboardData();
-    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+  }
+
+  void _initTimer() {
+    _currentTime ??= DateTime.now();
+    _clockTimer ??= Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() => _currentTime = DateTime.now());
     });
   }
 
   @override
   void dispose() {
-    _clockTimer.cancel();
+    _clockTimer?.cancel();
     super.dispose();
   }
 
@@ -126,6 +133,9 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _initTimer();
+    final now = _now;
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
     final cardBg = isDark ? AppColors.darkCard : AppColors.lightCard;
@@ -305,7 +315,7 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Today · ${DateFormat('EEE, d MMM').format(_currentTime)}',
+                                  'Today · ${DateFormat('EEE, d MMM').format(now)}',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: textMuted,
@@ -451,7 +461,7 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
 
                   // 4. Annual Progress Timeline (YearProgressCard from newmanagement)
                   _YearProgressWidget(
-                    currentTime: _currentTime,
+                    currentTime: now,
                     cardBg: cardBg,
                     borderCol: borderCol,
                     textPrimary: textPrimary,
@@ -711,7 +721,7 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
 
 /// Year Progress Card reproducing YearProgressCard.tsx
 class _YearProgressWidget extends StatelessWidget {
-  final DateTime currentTime;
+  final DateTime? currentTime;
   final Color cardBg;
   final Color borderCol;
   final Color textPrimary;
@@ -719,7 +729,7 @@ class _YearProgressWidget extends StatelessWidget {
   final Color accent;
 
   const _YearProgressWidget({
-    required this.currentTime,
+    this.currentTime,
     required this.cardBg,
     required this.borderCol,
     required this.textPrimary,
@@ -729,13 +739,14 @@ class _YearProgressWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final year = currentTime.year;
+    final time = currentTime ?? DateTime.now();
+    final year = time.year;
     final yearStart = DateTime(year, 1, 1);
     final yearEnd = DateTime(year, 12, 31, 23, 59, 59);
     final totalDays = DateTime(year, 12, 31).difference(yearStart).inDays + 1;
-    final dayOfYear = currentTime.difference(yearStart).inDays + 1;
+    final dayOfYear = time.difference(yearStart).inDays + 1;
     final daysRemaining = totalDays - dayOfYear;
-    final yearPercent = ((currentTime.millisecondsSinceEpoch - yearStart.millisecondsSinceEpoch) /
+    final yearPercent = ((time.millisecondsSinceEpoch - yearStart.millisecondsSinceEpoch) /
             (yearEnd.millisecondsSinceEpoch - yearStart.millisecondsSinceEpoch))
         .clamp(0.0, 1.0);
 
@@ -782,7 +793,7 @@ class _YearProgressWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    DateFormat('hh:mm:ss a').format(currentTime),
+                    DateFormat('hh:mm:ss a').format(time),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
@@ -791,7 +802,7 @@ class _YearProgressWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat('EEE, d MMM').format(currentTime),
+                    DateFormat('EEE, d MMM').format(time),
                     style: TextStyle(
                       fontSize: 11,
                       color: textMuted,
@@ -852,7 +863,7 @@ class _YearProgressWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                'Month: ${DateFormat('MMMM').format(currentTime)} (${currentTime.day}/${DateUtils.getDaysInMonth(year, currentTime.month)})',
+                'Month: ${DateFormat('MMMM').format(time)} (${time.day}/${DateUtils.getDaysInMonth(year, time.month)})',
                 style: TextStyle(
                   fontSize: 11,
                   color: textMuted,
@@ -1536,7 +1547,9 @@ class _PersonalPulseSection extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          DateFormat('dd MMMM yyyy').format(DateTime.parse(nextHoliday.date)),
+                          DateTime.tryParse(nextHoliday.date) != null
+                              ? DateFormat('dd MMMM yyyy').format(DateTime.parse(nextHoliday.date))
+                              : nextHoliday.date,
                           style: TextStyle(fontSize: 11, color: textMuted, fontFamily: 'Poppins'),
                         ),
                       ],

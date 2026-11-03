@@ -4,3 +4,4 @@ abstract class IDashboardService {
   Future<DashboardSummaryModel> getDashboardSummary({int? year});
   Future<bool> punchGymCheckIn();
 }
+
