@@ -8,6 +8,15 @@ abstract class AppRoutes {
   static const String tasks = '/tasks';
   static const String blockers = '/blockers';
   static const String leaves = '/leaves';
+  static const String applyLeave = '/apply-leave';
+  static const String leaveHistory = '/leave-history';
+  static const String allowance = '/allowance';
+  static const String advance = '/advance';
+  static const String gym = '/gym';
+  static const String certificates = '/certificates';
+  static const String whiteboard = '/whiteboard';
+  static const String notes = '/notes';
+  static const String jsonCrack = '/json-crack';
   static const String attendance = '/attendance';
   static const String payroll = '/payroll';
   static const String notifications = '/notifications';

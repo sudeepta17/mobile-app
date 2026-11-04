@@ -8,6 +8,7 @@ import '../../core/theme/app_colors.dart';
 import '../../models/dashboard_summary_model.dart';
 import '../../services/service_locator.dart';
 import '../../state/auth_state.dart';
+import '../../widgets/app_drawer.dart';
 
 /// Employee Dashboard Screen mirroring https://essaneglobal.com/management/employee/dashboard
 /// from mmanagement & newmanagement:
@@ -35,6 +36,7 @@ class EmployeeDashboardScreen extends StatefulWidget {
 }
 
 class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   DashboardSummaryModel? _summary;
   bool _isLoading = true;
   bool _isCheckedIn = false;
@@ -154,6 +156,11 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
     final employeeCode = _summary?.profile.employeeCode ?? user?.employeeCode ?? 'ESS-0142';
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: AppDrawer(
+        currentItem: SidebarItemKey.dashboard,
+        authState: widget.authState,
+      ),
       backgroundColor: bg,
       body: Stack(
         children: [
@@ -189,9 +196,32 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
                 physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                 padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 104),
                 children: [
-                  // 1. Header (Avatar, Workspace Greeting, Refresh, Notifications)
+                  // 1. Header (Menu Hamburger, Avatar, Workspace Greeting, Refresh, Notifications)
                   Row(
                     children: [
+                      // Sidebar Drawer Toggle Button
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          _scaffoldKey.currentState?.openDrawer();
+                        },
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          margin: const EdgeInsets.only(right: 10),
+                          decoration: BoxDecoration(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: borderCol, width: 1),
+                          ),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            CupertinoIcons.bars,
+                            size: 22,
+                            color: textPrimary,
+                          ),
+                        ),
+                      ),
                       Container(
                         width: 46,
                         height: 46,
