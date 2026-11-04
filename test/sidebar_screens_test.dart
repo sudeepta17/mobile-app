@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:essane_management/core/navigation/app_routes.dart';
@@ -91,6 +90,10 @@ void main() {
     expect(find.text('Essane Keep'), findsOneWidget);
     expect(find.text('Essane JSON Crack'), findsOneWidget);
     expect(find.text('Upcoming Holidays'), findsOneWidget);
+
+    // Verify User Footer info
+    expect(find.text('Sarah Jenkins'), findsOneWidget);
+    expect(find.text('ESS-0142'), findsOneWidget);
   });
 
   testWidgets('BlockersScreen renders tabs and lists blockers', (WidgetTester tester) async {

@@ -32,8 +32,9 @@ class MyTasksScreen extends StatefulWidget {
 }
 
 class _MyTasksScreenState extends State<MyTasksScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String _searchQuery = '';
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
+  String? _searchQuery = '';
   // Tasks array matching tasks.html lines 23-29
   final List<TaskItem> _tasks = [
     TaskItem(
@@ -70,13 +71,15 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
 
   // Filter categories matching tasks.html line 31
   final List<String> _filters = const ['All', 'Pending', 'In progress', 'Done'];
-  String _currentFilter = 'All';
+  String? _currentFilter = 'All';
 
   List<TaskItem> get _filteredTasks {
+    final query = _searchQuery ?? '';
+    final filter = _currentFilter ?? 'All';
     return _tasks.where((t) {
-      if (_currentFilter != 'All' && t.status != _currentFilter) return false;
-      if (_searchQuery.isNotEmpty) {
-        final q = _searchQuery.toLowerCase();
+      if (filter != 'All' && t.status != filter) return false;
+      if (query.isNotEmpty) {
+        final q = query.toLowerCase();
         return t.title.toLowerCase().contains(q) || t.meta.toLowerCase().contains(q);
       }
       return true;
@@ -262,7 +265,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
     final summaryText = '${filtered.length} shown · ${_tasks.length} total';
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -315,7 +318,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                       GestureDetector(
                         onTap: () {
                           HapticFeedback.selectionClick();
-                          _scaffoldKey.currentState?.openDrawer();
+                          _effectiveScaffoldKey.currentState?.openDrawer();
                         },
                         child: Container(
                           width: 40,
@@ -375,7 +378,7 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                   physics: const BouncingScrollPhysics(),
                   child: Row(
                     children: _filters.map((f) {
-                      final isSelected = f == _currentFilter;
+                      final isSelected = f == (_currentFilter ?? 'All');
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: GestureDetector(

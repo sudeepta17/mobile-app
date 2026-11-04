@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../core/navigation/app_routes.dart';
+import '../core/theme/app_colors.dart';
 import '../state/auth_state.dart';
 
 enum SidebarItemKey {
@@ -21,11 +22,13 @@ enum SidebarItemKey {
   upcomingHolidays,
 }
 
-/// Sidebar Drawer reproducing the exact dark workspace navigation from
-/// https://essaneglobal.com/management/employee/dashboard and media_1793769007641_c7283757.png:
-/// - Header: Orange "Essane Global" mark + typography
+/// Sidebar Drawer reproducing the exact workspace navigation from
+/// https://essaneglobal.com/management/employee/dashboard and media_1793769007641_c7283757.png,
+/// seamlessly styled to match both Light and Dark application themes:
+/// - Header: Essane Global logo mark + typography
 /// - Section: "WORKSPACE"
 /// - 14 Navigation items with active indicator pill & orange highlight bar
+/// - User footer with avatar, name, employee code, and logout button
 class AppDrawer extends StatelessWidget {
   final SidebarItemKey currentItem;
   final AuthState authState;
@@ -46,12 +49,37 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const bg = Color(0xFF121417);
-    const borderCol = Color(0x1FFFFFFF);
-    const accent = Color(0xFFE8590C);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkBackground : AppColors.lightBackground;
+    final borderCol = isDark ? AppColors.darkLine : AppColors.lightLine;
+    final borderCol2 = isDark ? AppColors.darkLine2 : AppColors.lightLine2;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textMuted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final accent = isDark ? AppColors.accentDark : AppColors.accentLight;
+    final sectionLabelColor = isDark ? const Color(0xFF6B7280) : const Color(0xFF94A3B8);
+
+    final activeItemBg = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : accent.withValues(alpha: 0.10);
+    final activeTextColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final inactiveTextColor = isDark ? const Color(0xFFD1D5DB) : const Color(0xFF334155);
+
+    final footerCardBg = isDark ? const Color(0xFF1A1D21) : const Color(0xFFF8FAFC);
+
+    final userName = authState.currentUser?.name ?? 'Sarah Jenkins';
+    final userParts = userName.trim().split(RegExp(r'\s+'));
+    final userInitials = userParts.length >= 2
+        ? '${userParts.first[0]}${userParts.last[0]}'.toUpperCase()
+        : (userParts.isNotEmpty && userParts.first.isNotEmpty
+            ? userParts.first[0].toUpperCase()
+            : 'SJ');
 
     return Drawer(
       backgroundColor: bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
+        side: BorderSide(color: borderCol, width: 1.0),
+      ),
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +101,7 @@ class AppDrawer extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Text(
                         'Essane',
                         style: TextStyle(
@@ -84,7 +112,7 @@ class AppDrawer extends StatelessWidget {
                           height: 1.0,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
                         'Global',
                         style: TextStyle(
@@ -100,18 +128,18 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
 
-            const Divider(color: borderCol, height: 1),
+            Divider(color: borderCol, height: 1),
 
             // 2. Section Header: "WORKSPACE"
-            const Padding(
-              padding: EdgeInsets.only(left: 20, top: 18, bottom: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 18, bottom: 8),
               child: Text(
                 'WORKSPACE',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1.5,
-                  color: Color(0xFF6B7280),
+                  color: sectionLabelColor,
                   fontFamily: 'Poppins',
                 ),
               ),
@@ -126,6 +154,10 @@ class AppDrawer extends StatelessWidget {
                     icon: CupertinoIcons.square_grid_2x2,
                     label: 'Dashboard',
                     isActive: currentItem == SidebarItemKey.dashboard,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.of(context).pushReplacementNamed(AppRoutes.main);
@@ -135,6 +167,10 @@ class AppDrawer extends StatelessWidget {
                     icon: CupertinoIcons.exclamationmark_triangle,
                     label: 'Blockers',
                     isActive: currentItem == SidebarItemKey.blockers,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     badgeCount: 2,
                     onTap: () => _navigateTo(context, AppRoutes.blockers),
                   ),
@@ -142,90 +178,144 @@ class AppDrawer extends StatelessWidget {
                     icon: CupertinoIcons.checkmark_square,
                     label: 'My Tasks',
                     isActive: currentItem == SidebarItemKey.myTasks,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.tasks),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.folder,
                     label: 'Projects & Builds',
                     isActive: currentItem == SidebarItemKey.projectsAndBuilds,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.projects),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.bag,
                     label: 'Apply Leave',
                     isActive: currentItem == SidebarItemKey.applyLeave,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.applyLeave),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.clock,
                     label: 'Leave History',
                     isActive: currentItem == SidebarItemKey.leaveHistory,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.leaveHistory),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.creditcard,
                     label: 'My Allowance',
                     isActive: currentItem == SidebarItemKey.myAllowance,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.allowance),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.money_dollar,
                     label: 'Salary Advance',
                     isActive: currentItem == SidebarItemKey.salaryAdvance,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.advance),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.checkmark_circle,
                     label: 'Gym Check-in',
                     isActive: currentItem == SidebarItemKey.gymCheckin,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.gym),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.rosette,
                     label: 'My Certificates',
                     isActive: currentItem == SidebarItemKey.myCertificates,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.certificates),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.pencil_outline,
                     label: 'Essanecalidraw',
                     isActive: currentItem == SidebarItemKey.essanecalidraw,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.whiteboard),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.doc_plaintext,
                     label: 'Essane Keep',
                     isActive: currentItem == SidebarItemKey.essaneKeep,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.notes),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.chevron_left_slash_chevron_right,
                     label: 'Essane JSON Crack',
                     isActive: currentItem == SidebarItemKey.essaneJsonCrack,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.jsonCrack),
                   ),
                   _DrawerItem(
                     icon: CupertinoIcons.calendar,
                     label: 'Upcoming Holidays',
                     isActive: currentItem == SidebarItemKey.upcomingHolidays,
+                    accent: accent,
+                    activeBg: activeItemBg,
+                    activeTextColor: activeTextColor,
+                    inactiveTextColor: inactiveTextColor,
                     onTap: () => _navigateTo(context, AppRoutes.holidays),
                   ),
                 ],
               ),
             ),
 
-            const Divider(color: borderCol, height: 1),
+            Divider(color: borderCol, height: 1),
 
             // 4. User profile pill at footer
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: footerCardBg,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: borderCol2, width: 1.0),
+              ),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 18,
-                    backgroundColor: accent.withValues(alpha: 0.2),
-                    child: const Text(
-                      'SJ',
+                    backgroundColor: accent.withValues(alpha: isDark ? 0.2 : 0.12),
+                    child: Text(
+                      userInitials,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -241,11 +331,11 @@ class AppDrawer extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          authState.currentUser?.name ?? 'Sarah Jenkins',
-                          style: const TextStyle(
+                          userName,
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            color: textPrimary,
                             fontFamily: 'Poppins',
                           ),
                           maxLines: 1,
@@ -253,9 +343,9 @@ class AppDrawer extends StatelessWidget {
                         ),
                         Text(
                           authState.currentUser?.employeeCode ?? 'ESS-0142',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: Color(0xFF9CA3AF),
+                            color: textMuted,
                             fontFamily: 'Poppins',
                           ),
                         ),
@@ -263,7 +353,8 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(CupertinoIcons.square_arrow_right, size: 18, color: Color(0xFF9CA3AF)),
+                    icon: Icon(CupertinoIcons.square_arrow_right, size: 18, color: textMuted),
+                    tooltip: 'Logout',
                     onPressed: () {
                       authState.logout();
                       Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
@@ -285,6 +376,10 @@ class _DrawerItem extends StatelessWidget {
   final bool isActive;
   final int? badgeCount;
   final VoidCallback onTap;
+  final Color accent;
+  final Color activeBg;
+  final Color activeTextColor;
+  final Color inactiveTextColor;
 
   const _DrawerItem({
     required this.icon,
@@ -292,12 +387,14 @@ class _DrawerItem extends StatelessWidget {
     required this.isActive,
     this.badgeCount,
     required this.onTap,
+    required this.accent,
+    required this.activeBg,
+    required this.activeTextColor,
+    required this.inactiveTextColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    const accent = Color(0xFFE8590C);
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Material(
@@ -305,10 +402,12 @@ class _DrawerItem extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
+          hoverColor: accent.withValues(alpha: 0.05),
+          splashColor: accent.withValues(alpha: 0.10),
           child: Container(
             height: 44,
             decoration: BoxDecoration(
-              color: isActive ? Colors.white.withValues(alpha: 0.08) : Colors.transparent,
+              color: isActive ? activeBg : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -326,7 +425,7 @@ class _DrawerItem extends StatelessWidget {
                 Icon(
                   icon,
                   size: 19,
-                  color: isActive ? accent : const Color(0xFFEA580C).withValues(alpha: 0.8),
+                  color: isActive ? accent : accent.withValues(alpha: 0.82),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -335,7 +434,7 @@ class _DrawerItem extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13.5,
                       fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                      color: isActive ? Colors.white : const Color(0xFFD1D5DB),
+                      color: isActive ? activeTextColor : inactiveTextColor,
                       fontFamily: 'Poppins',
                     ),
                     maxLines: 1,
@@ -347,7 +446,7 @@ class _DrawerItem extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 12),
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD97706),
+                      color: const Color(0xFFF59E0B),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
