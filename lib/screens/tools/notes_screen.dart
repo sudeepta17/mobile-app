@@ -42,10 +42,10 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
   String _searchQuery = '';
-
-  late List<NoteItem> _notes;
+  List<NoteItem> _notes = [];
 
   final List<Color> _noteColors = const [
     Color(0xFFFEF3C7), // Warm Amber
@@ -348,9 +348,10 @@ class _NotesScreenState extends State<NotesScreen> {
     final textMuted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final accent = isDark ? AppColors.accentDark : AppColors.accentLight;
 
+    final query = _searchQuery;
     final filtered = _notes.where((n) {
-      if (_searchQuery.isEmpty) return true;
-      final q = _searchQuery.toLowerCase();
+      if (query.isEmpty) return true;
+      final q = query.toLowerCase();
       final inTitle = n.title.toLowerCase().contains(q);
       final inContent = n.content.toLowerCase().contains(q);
       final inChecklist = n.checklistItems.any((it) => it.text.toLowerCase().contains(q));
@@ -361,7 +362,7 @@ class _NotesScreenState extends State<NotesScreen> {
     final otherNotes = filtered.where((n) => !n.isPinned).toList();
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -373,7 +374,7 @@ class _NotesScreenState extends State<NotesScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

@@ -17,7 +17,8 @@ class ApplyLeaveScreen extends StatefulWidget {
 }
 
 class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
 
   String _selectedLeaveType = 'Casual Leave';
   DateTime _startDate = DateTime.now().add(const Duration(days: 1));
@@ -31,6 +32,12 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     'Earned Leave': 8,
     'Unpaid Leave': 30,
   };
+
+  @override
+  void dispose() {
+    _reasonCtrl.dispose();
+    super.dispose();
+  }
 
   int get _selectedDaysCount {
     if (_endDate.isBefore(_startDate)) return 1;
@@ -135,7 +142,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     final accent = isDark ? AppColors.accentDark : AppColors.accentLight;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -147,7 +154,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

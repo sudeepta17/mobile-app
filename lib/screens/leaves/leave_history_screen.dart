@@ -40,11 +40,11 @@ class LeaveHistoryScreen extends StatefulWidget {
 }
 
 class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String _selectedFilter = 'all'; // all, pending, approved, rejected
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
+  String _selectedFilter = 'all';
   String _searchQuery = '';
-
-  late List<LeaveHistoryItem> _leaves;
+  List<LeaveHistoryItem> _leaves = [];
 
   @override
   void initState() {
@@ -97,10 +97,12 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
   }
 
   List<LeaveHistoryItem> get _filteredLeaves {
+    final filter = _selectedFilter;
+    final query = _searchQuery;
     return _leaves.where((item) {
-      if (_selectedFilter != 'all' && item.status != _selectedFilter) return false;
-      if (_searchQuery.isNotEmpty) {
-        final q = _searchQuery.toLowerCase();
+      if (filter != 'all' && item.status != filter) return false;
+      if (query.isNotEmpty) {
+        final q = query.toLowerCase();
         final matchesType = item.leaveType.toLowerCase().contains(q);
         final matchesReason = item.reason.toLowerCase().contains(q);
         if (!matchesType && !matchesReason) return false;
@@ -159,7 +161,7 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
     final filtered = _filteredLeaves;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -171,7 +173,7 @@ class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

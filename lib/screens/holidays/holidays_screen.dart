@@ -21,7 +21,8 @@ class HolidaysScreen extends StatefulWidget {
 }
 
 class _HolidaysScreenState extends State<HolidaysScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
   List<HolidayModel> _holidays = [];
   bool _isLoading = true;
 
@@ -53,7 +54,7 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
     final nextHolidayDate = nextHoliday != null ? (DateTime.tryParse(nextHoliday.date) ?? DateTime.now()) : null;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -65,7 +66,7 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

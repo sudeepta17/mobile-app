@@ -34,13 +34,21 @@ class AdvanceManagementScreen extends StatefulWidget {
 }
 
 class _AdvanceManagementScreenState extends State<AdvanceManagementScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
   final TextEditingController _amountCtrl = TextEditingController();
   final TextEditingController _reasonCtrl = TextEditingController();
   DateTime _requiredDate = DateTime.now().add(const Duration(days: 3));
   bool _isSubmitting = false;
 
-  late List<AdvanceRecord> _advances;
+  List<AdvanceRecord> _advances = [];
+
+  @override
+  void dispose() {
+    _amountCtrl.dispose();
+    _reasonCtrl.dispose();
+    super.dispose();
+  }
 
   static final NumberFormat _currencyFormat = NumberFormat.currency(
     locale: 'en_IN',
@@ -160,7 +168,7 @@ class _AdvanceManagementScreenState extends State<AdvanceManagementScreen> {
     final accent = isDark ? AppColors.accentDark : AppColors.accentLight;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -172,7 +180,7 @@ class _AdvanceManagementScreenState extends State<AdvanceManagementScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

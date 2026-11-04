@@ -75,7 +75,8 @@ class AllowanceSubmitScreen extends StatefulWidget {
 }
 
 class _AllowanceSubmitScreenState extends State<AllowanceSubmitScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
   String _selectedType = 'wifi';
   DateTime _expenseDate = DateTime.now();
   final TextEditingController _amountCtrl = TextEditingController();
@@ -83,7 +84,14 @@ class _AllowanceSubmitScreenState extends State<AllowanceSubmitScreen> {
   String? _attachedFileName;
   bool _isSubmitting = false;
 
-  late List<AllowanceClaim> _claims;
+  List<AllowanceClaim> _claims = [];
+
+  @override
+  void dispose() {
+    _amountCtrl.dispose();
+    _remarksCtrl.dispose();
+    super.dispose();
+  }
 
   static final NumberFormat _currencyFormat = NumberFormat.currency(
     locale: 'en_IN',
@@ -178,7 +186,7 @@ class _AllowanceSubmitScreenState extends State<AllowanceSubmitScreen> {
     final totalApproved = _claims.where((c) => c.status == 'approved').fold(0.0, (sum, c) => sum + c.amount);
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -190,7 +198,7 @@ class _AllowanceSubmitScreenState extends State<AllowanceSubmitScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

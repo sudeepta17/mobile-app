@@ -31,7 +31,8 @@ class WhiteboardScreen extends StatefulWidget {
 }
 
 class _WhiteboardScreenState extends State<WhiteboardScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
 
   final List<WhiteboardStroke> _strokes = [];
   final List<WhiteboardStroke> _undoneStrokes = [];
@@ -101,7 +102,7 @@ class _WhiteboardScreenState extends State<WhiteboardScreen> {
     final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -113,7 +114,7 @@ class _WhiteboardScreenState extends State<WhiteboardScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

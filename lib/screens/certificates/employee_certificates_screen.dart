@@ -38,10 +38,10 @@ class EmployeeCertificatesScreen extends StatefulWidget {
 }
 
 class _EmployeeCertificatesScreenState extends State<EmployeeCertificatesScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
   String _searchQuery = '';
-
-  late List<CertificateRecord> _certificates;
+  List<CertificateRecord> _certificates = [];
 
   @override
   void initState() {
@@ -220,14 +220,15 @@ class _EmployeeCertificatesScreenState extends State<EmployeeCertificatesScreen>
     final textMuted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final accent = isDark ? AppColors.accentDark : AppColors.accentLight;
 
+    final query = _searchQuery;
     final filtered = _certificates.where((c) {
-      if (_searchQuery.isEmpty) return true;
-      final q = _searchQuery.toLowerCase();
+      if (query.isEmpty) return true;
+      final q = query.toLowerCase();
       return c.title.toLowerCase().contains(q) || c.performanceNote.toLowerCase().contains(q);
     }).toList();
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -239,7 +240,7 @@ class _EmployeeCertificatesScreenState extends State<EmployeeCertificatesScreen>
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

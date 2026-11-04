@@ -16,7 +16,8 @@ class JsonCrackScreen extends StatefulWidget {
 }
 
 class _JsonCrackScreenState extends State<JsonCrackScreen> with SingleTickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
   late TabController _tabController;
   final TextEditingController _jsonController = TextEditingController();
 
@@ -121,7 +122,7 @@ class _JsonCrackScreenState extends State<JsonCrackScreen> with SingleTickerProv
     final accent = isDark ? AppColors.accentDark : AppColors.accentLight;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -133,7 +134,7 @@ class _JsonCrackScreenState extends State<JsonCrackScreen> with SingleTickerProv
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

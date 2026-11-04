@@ -121,12 +121,13 @@ class BlockersScreen extends StatefulWidget {
 }
 
 class _BlockersScreenState extends State<BlockersScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String _selectedTab = 'All'; // All, Waiting, Replied, Solved
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
+  String _selectedTab = 'All';
   String _searchQuery = '';
   BlockerCategory? _categoryFilter;
 
-  late List<BlockerItemData> _blockers;
+  List<BlockerItemData> _blockers = [];
 
   @override
   void initState() {
@@ -208,15 +209,17 @@ class _BlockersScreenState extends State<BlockersScreen> {
   }
 
   List<BlockerItemData> get _filteredBlockers {
+    final query = _searchQuery;
+    final tab = _selectedTab;
     return _blockers.where((item) {
-      if (_selectedTab == 'Waiting' && item.status != 'waiting') return false;
-      if (_selectedTab == 'Replied' && item.status != 'replied') return false;
-      if (_selectedTab == 'Solved' && item.status != 'solved') return false;
+      if (tab == 'Waiting' && item.status != 'waiting') return false;
+      if (tab == 'Replied' && item.status != 'replied') return false;
+      if (tab == 'Solved' && item.status != 'solved') return false;
 
       if (_categoryFilter != null && item.category != _categoryFilter) return false;
 
-      if (_searchQuery.isNotEmpty) {
-        final q = _searchQuery.toLowerCase();
+      if (query.isNotEmpty) {
+        final q = query.toLowerCase();
         final matchesTitle = item.title.toLowerCase().contains(q);
         final matchesDesc = item.description.toLowerCase().contains(q);
         final matchesProj = item.projectTitle.toLowerCase().contains(q);
@@ -700,7 +703,7 @@ class _BlockersScreenState extends State<BlockersScreen> {
     final filtered = _filteredBlockers;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -724,8 +727,8 @@ class _BlockersScreenState extends State<BlockersScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      if (_scaffoldKey.currentState?.hasDrawer ?? false) {
-                        _scaffoldKey.currentState?.openDrawer();
+                      if (_effectiveScaffoldKey.currentState?.hasDrawer ?? false) {
+                        _effectiveScaffoldKey.currentState?.openDrawer();
                       } else {
                         Navigator.of(context).maybePop();
                       }

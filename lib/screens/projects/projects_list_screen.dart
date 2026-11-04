@@ -41,10 +41,11 @@ class ProjectsListScreen extends StatefulWidget {
 }
 
 class _ProjectsListScreenState extends State<ProjectsListScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
   List<ProjectModel> _allProjects = [];
   bool _isLoading = true;
-  String _selectedFilter = 'all'; // all, in_progress, completed, builds
+  String _selectedFilter = 'all';
   String _searchQuery = '';
   bool _showSearch = false;
 
@@ -93,11 +94,13 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
   }
 
   List<ProjectModel> get _filteredProjects {
+    final filter = _selectedFilter;
+    final query = _searchQuery;
     return _allProjects.where((p) {
-      final matchesFilter = _selectedFilter == 'all' || p.status == _selectedFilter;
-      final matchesSearch = _searchQuery.isEmpty ||
-          p.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          p.code.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesFilter = filter == 'all' || p.status == filter;
+      final matchesSearch = query.isEmpty ||
+          p.title.toLowerCase().contains(query.toLowerCase()) ||
+          p.code.toLowerCase().contains(query.toLowerCase());
       return matchesFilter && matchesSearch;
     }).toList();
   }
@@ -202,7 +205,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
     final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -214,7 +217,7 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(

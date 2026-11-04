@@ -34,13 +34,14 @@ class GymCheckinScreen extends StatefulWidget {
 }
 
 class _GymCheckinScreenState extends State<GymCheckinScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get _effectiveScaffoldKey => _scaffoldKey ??= GlobalKey<ScaffoldState>();
   final DateTime _currentMonth = DateTime.now();
 
   int _streakCount = 14;
   int _monthlyCheckins = 18;
 
-  late List<GymEntry> _entries;
+  List<GymEntry> _entries = [];
 
   @override
   void initState() {
@@ -230,7 +231,7 @@ class _GymCheckinScreenState extends State<GymCheckinScreen> {
     final accent = isDark ? AppColors.accentDark : AppColors.accentLight;
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: _effectiveScaffoldKey,
       backgroundColor: bg,
       drawer: widget.authState != null
           ? AppDrawer(
@@ -242,7 +243,7 @@ class _GymCheckinScreenState extends State<GymCheckinScreen> {
         leading: widget.authState != null
             ? IconButton(
                 icon: const Icon(CupertinoIcons.bars),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                onPressed: () => _effectiveScaffoldKey.currentState?.openDrawer(),
               )
             : null,
         title: Text(
