@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_typography.dart';
+import '../app_header_back_button.dart';
 
 class AppleScaffold extends StatelessWidget {
   final String title;
@@ -67,7 +68,15 @@ class AppleScaffold extends StatelessWidget {
                 ),
             ],
           ),
-          actions: actions,
+          actions: actions ??
+              (Navigator.canPop(context)
+                  ? const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 12),
+                        child: AppHeaderBackButton(),
+                      ),
+                    ]
+                  : null),
         ),
         body: SafeArea(
           bottom: bottomBar == null,
@@ -117,7 +126,15 @@ class AppleScaffold extends StatelessWidget {
                   ),
                 ),
               ),
-              actions: actions,
+              actions: actions ??
+              (Navigator.canPop(context)
+                  ? const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 12),
+                        child: AppHeaderBackButton(),
+                      ),
+                    ]
+                  : null),
             ),
             SliverToBoxAdapter(child: body),
           ],
