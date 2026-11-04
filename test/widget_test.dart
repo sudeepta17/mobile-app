@@ -105,7 +105,7 @@ void main() {
     expect(find.text('Apply Leave'), findsOneWidget);
     expect(find.text('Allowance'), findsOneWidget);
     expect(find.text('Salary Advance'), findsOneWidget);
-    expect(find.text('Attendance'), findsOneWidget);
+    expect(find.text('Attendance & Shift'), findsOneWidget);
     expect(find.text('Gym Check-in'), findsOneWidget);
 
     // 5. Personal Pulse & Recent Activity

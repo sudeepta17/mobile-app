@@ -7,6 +7,7 @@ import 'interfaces/attendance_service_interface.dart';
 import 'interfaces/payroll_service_interface.dart';
 import 'interfaces/holiday_service_interface.dart';
 
+import 'employee_shift_service.dart';
 import 'mock/mock_auth_service.dart';
 import 'mock/mock_dashboard_service.dart';
 import 'mock/mock_project_service.dart';
@@ -30,6 +31,7 @@ class ServiceLocator {
   late final IAttendanceService attendanceService = MockAttendanceService();
   late final IPayrollService payrollService = MockPayrollService();
   late final IHolidayService holidayService = MockHolidayService();
+  late final EmployeeShiftService shiftService = EmployeeShiftService();
 }
 
 final services = ServiceLocator.instance;

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../models/dashboard_summary_model.dart';
+import '../../models/employee_shift_model.dart';
 import '../../services/service_locator.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_drawer.dart';
@@ -39,12 +40,10 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   DashboardSummaryModel? _summary;
   bool _isLoading = true;
-  bool _isCheckedIn = false;
-  String _checkInTimeStr = '';
   Timer? _clockTimer;
-  DateTime? _currentTime;
+  DateTime _currentTime = DateTime.now();
 
-  DateTime get _now => _currentTime ?? DateTime.now();
+  DateTime get _now => _currentTime;
 
   static final NumberFormat _currencyFormat = NumberFormat.currency(
     locale: 'en_IN',
@@ -60,7 +59,6 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
   }
 
   void _initTimer() {
-    _currentTime ??= DateTime.now();
     _clockTimer ??= Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() => _currentTime = DateTime.now());
     });
@@ -77,29 +75,15 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
     setState(() => _isLoading = true);
     try {
       final summary = await services.dashboardService.getDashboardSummary();
-      final attendance = await services.attendanceService.getAttendanceData();
       if (mounted) {
         setState(() {
           _summary = summary;
-          _isCheckedIn = attendance.today.isCheckedIn;
-          _checkInTimeStr = attendance.today.checkInTime ?? '09:30 AM';
           _isLoading = false;
         });
       }
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  void _toggleCheckIn() {
-    HapticFeedback.mediumImpact();
-    setState(() {
-      _isCheckedIn = !_isCheckedIn;
-      if (_isCheckedIn) {
-        _checkInTimeStr = DateFormat('hh:mm a').format(DateTime.now());
-      }
-    });
-    services.attendanceService.punchAttendance();
   }
 
   Future<void> _handleGymCheckIn() async {
@@ -342,87 +326,305 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
 
                   const SizedBox(height: 18),
 
-                  // 2. Shift & Live Punch Attendance Card
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: cardBg,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: borderCol, width: 1.0),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // 2. Shift & Live Punch Attendance Card mirroring EmployeeShiftService.php & AttendanceShiftReports.tsx
+                  Builder(
+                    builder: (ctx) {
+                      final shift = services.shiftService.activeShift;
+                      final isWorking = shift != null && shift.status == ShiftStatus.active;
+                      final isOnBreak = shift != null && shift.status == ShiftStatus.onBreak;
+                      final isPowerOut = shift != null && shift.status == ShiftStatus.powerOut;
+                      final isOff = shift == null;
+
+                      Color statusBadgeBg;
+                      Color statusBadgeText;
+                      String statusLabel;
+
+                      if (isWorking) {
+                        statusBadgeBg = AppColors.greenSoft;
+                        statusBadgeText = AppColors.green;
+                        statusLabel = 'WORKING';
+                      } else if (isOnBreak) {
+                        statusBadgeBg = const Color(0x26F59E0B);
+                        statusBadgeText = const Color(0xFFF59E0B);
+                        statusLabel = 'ON BREAK';
+                      } else if (isPowerOut) {
+                        statusBadgeBg = const Color(0x26DC2626);
+                        statusBadgeText = const Color(0xFFDC2626);
+                        statusLabel = 'POWER CUT';
+                      } else {
+                        statusBadgeBg = isDark ? const Color(0xFF26292E) : const Color(0xFFE2E8F0);
+                        statusBadgeText = textMuted;
+                        statusLabel = 'OFF THE CLOCK';
+                      }
+
+                      final elapsedMinutes = shift != null
+                          ? now.difference(shift.loginAt).inMinutes
+                          : 0;
+                      final elapsedHours = elapsedMinutes ~/ 60;
+                      final elapsedMins = elapsedMinutes % 60;
+                      final elapsedStr = elapsedHours > 0
+                          ? '${elapsedHours}h ${elapsedMins}m'
+                          : '${elapsedMins}m';
+
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: borderCol, width: 1.0),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Today · ${DateFormat('EEE, d MMM').format(now)}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: textMuted,
-                                    fontFamily: 'Poppins',
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(CupertinoIcons.clock, size: 14, color: textMuted),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Shift: 11:00 AM – 08:00 PM IST',
+                                      style: TextStyle(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w500,
+                                        color: textMuted,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _isCheckedIn
-                                      ? 'Checked in at $_checkInTimeStr'
-                                      : 'You are off the clock',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: textPrimary,
-                                    fontFamily: 'Poppins',
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
+                                  decoration: BoxDecoration(
+                                    color: statusBadgeBg,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width: 7,
+                                        height: 7,
+                                        decoration: BoxDecoration(
+                                          color: statusBadgeText,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        statusLabel,
+                                        style: TextStyle(
+                                          fontSize: 10.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: statusBadgeText,
+                                          letterSpacing: 0.4,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: _isCheckedIn ? AppColors.greenSoft : const Color(0x1AD97706),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(
-                                _isCheckedIn ? 'Working' : 'Not Shifted',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                  color: _isCheckedIn ? AppColors.green : const Color(0xFFD97706),
-                                  fontFamily: 'Poppins',
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isOff
+                                          ? 'You are off the clock'
+                                          : '$elapsedStr elapsed today',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: textPrimary,
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      isOff
+                                          ? 'Punch in when starting your daily shift'
+                                          : 'Logged in at ${DateFormat('hh:mm a').format(shift.loginAt)}${shift.delayMinutes > 0 ? " (${shift.delayMinutes}m late)" : " (on time)"}',
+                                      style: TextStyle(
+                                        fontSize: 11.5,
+                                        color: isOff ? textMuted : (shift.delayMinutes > 0 ? const Color(0xFFF59E0B) : textMuted),
+                                        fontFamily: 'Poppins',
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
+                                GestureDetector(
+                                  onTap: () => Navigator.pushNamed(context, AppRoutes.attendanceReports),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: accent.withValues(alpha: 0.08),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Reports',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: accent,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Icon(CupertinoIcons.chevron_right, size: 10, color: accent),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
+                            const SizedBox(height: 14),
+
+                            // Controls
+                            if (isOff)
+                              SizedBox(
+                                width: double.infinity,
+                                height: 44,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: accent,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  ),
+                                  icon: const Icon(CupertinoIcons.play_fill, size: 15, color: Colors.white),
+                                  label: const Text(
+                                    'Start Daily Shift (Punch In)',
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13),
+                                  ),
+                                  onPressed: () async {
+                                    HapticFeedback.mediumImpact();
+                                    await services.shiftService.startShift();
+                                    if (mounted) setState(() {});
+                                  },
+                                ),
+                              )
+                            else ...[
+                              Row(
+                                children: [
+                                  // Break toggle
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: isOnBreak ? Colors.white : textPrimary,
+                                        backgroundColor: isOnBreak ? const Color(0xFFF59E0B) : Colors.transparent,
+                                        side: BorderSide(color: isOnBreak ? const Color(0xFFF59E0B) : borderCol),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        padding: const EdgeInsets.symmetric(vertical: 10),
+                                      ),
+                                      icon: Icon(
+                                        isOnBreak ? CupertinoIcons.play_fill : CupertinoIcons.pause_fill,
+                                        size: 13,
+                                      ),
+                                      label: Text(
+                                        isOnBreak ? 'Resume' : 'Break',
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                                      ),
+                                      onPressed: () async {
+                                        HapticFeedback.selectionClick();
+                                        await services.shiftService.toggleBreak();
+                                        if (mounted) setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+
+                                  // Power cut toggle
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: isPowerOut ? Colors.white : textPrimary,
+                                        backgroundColor: isPowerOut ? const Color(0xFFDC2626) : Colors.transparent,
+                                        side: BorderSide(color: isPowerOut ? const Color(0xFFDC2626) : borderCol),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        padding: const EdgeInsets.symmetric(vertical: 10),
+                                      ),
+                                      icon: const Icon(CupertinoIcons.bolt_fill, size: 13),
+                                      label: Text(
+                                        isPowerOut ? 'Power OK' : 'Power Cut',
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                                      ),
+                                      onPressed: () async {
+                                        HapticFeedback.selectionClick();
+                                        await services.shiftService.togglePower();
+                                        if (mounted) setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+
+                                  // Clock Out button
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xFFEF4444),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        padding: const EdgeInsets.symmetric(vertical: 10),
+                                      ),
+                                      icon: const Icon(CupertinoIcons.square_arrow_right, size: 13, color: Colors.white),
+                                      label: const Text(
+                                        'Clock Out',
+                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                                      ),
+                                      onPressed: () async {
+                                        HapticFeedback.mediumImpact();
+                                        await services.shiftService.endShift();
+                                        if (mounted) setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              // Undo action button if within 2 minutes
+                              if (shift.canUndo) ...[
+                                const SizedBox(height: 10),
+                                GestureDetector(
+                                  onTap: () async {
+                                    HapticFeedback.mediumImpact();
+                                    await services.shiftService.undoLastAction();
+                                    if (mounted) setState(() {});
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0x1AF59E0B),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(color: const Color(0x40F59E0B)),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(CupertinoIcons.arrow_counterclockwise, size: 12, color: Color(0xFFF59E0B)),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          'Undo last action (${shift.lastActionName ?? ""})',
+                                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFFF59E0B)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        GestureDetector(
-                          onTap: _toggleCheckIn,
-                          child: Container(
-                            width: double.infinity,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: _isCheckedIn ? Colors.transparent : accent,
-                              borderRadius: BorderRadius.circular(12),
-                              border: _isCheckedIn ? Border.all(color: accent, width: 1.5) : null,
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              _isCheckedIn ? 'Check out' : 'Check in',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: _isCheckedIn ? accent : Colors.white,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
 
                   // 3. Pending Blockers Alert Banner (if pending blockers exist)
@@ -671,12 +873,12 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
                       ),
                       _QuickActionTile(
                         icon: CupertinoIcons.clock,
-                        label: 'Attendance',
-                        detail: 'Shift activity',
+                        label: 'Attendance & Shift',
+                        detail: 'Review shift activity',
                         color: const Color(0xFF0D9488),
                         cardBg: cardBg,
                         borderCol: borderCol,
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.attendance),
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.attendanceReports),
                       ),
                       _QuickActionTile(
                         icon: CupertinoIcons.heart_fill,

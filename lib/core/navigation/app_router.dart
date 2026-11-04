@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../screens/attendance/attendance_screen.dart';
+import '../../screens/attendance/attendance_shift_reports_screen.dart';
 import '../../screens/auth/login_screen.dart';
 import '../../screens/blockers/blockers_screen.dart';
 import '../../screens/certificates/employee_certificates_screen.dart';
@@ -169,6 +170,12 @@ class AppRouter {
       case AppRoutes.attendance:
         return CupertinoPageRoute(
           builder: (_) => const AttendanceScreen(),
+          settings: settings,
+        );
+
+      case AppRoutes.attendanceReports:
+        return CupertinoPageRoute(
+          builder: (_) => const AttendanceShiftReportsScreen(),
           settings: settings,
         );
 

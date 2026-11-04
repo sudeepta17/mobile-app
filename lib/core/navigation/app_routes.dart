@@ -18,6 +18,7 @@ abstract class AppRoutes {
   static const String notes = '/notes';
   static const String jsonCrack = '/json-crack';
   static const String attendance = '/attendance';
+  static const String attendanceReports = '/employee/attendance-reports';
   static const String payroll = '/payroll';
   static const String notifications = '/notifications';
   static const String team = '/team';

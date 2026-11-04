@@ -52,7 +52,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               authState: widget.authState,
               onNavigateTab: _selectTab,
             ),
-      const MyTasksScreen(),
+      MyTasksScreen(authState: widget.authState),
       const TeamScreen(),
       const LeavesScreen(),
       ProfileScreen(authState: widget.authState, themeState: widget.themeState),
