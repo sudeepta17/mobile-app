@@ -281,6 +281,20 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
       ),
       body: Stack(
         children: [
+          // Fluid ribbon wallpaper in light mode
+          if (!isDark)
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.65,
+                child: Image.asset(
+                  'assets/images/app_background.jpg',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                ),
+              ),
+            ),
+
           // Top Ambient Glow from styles.css: radial-gradient(circle at 85% 0, var(--accent-glow) 0%, transparent 65%)
           Positioned(
             left: 0,

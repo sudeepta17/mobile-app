@@ -164,6 +164,20 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
       backgroundColor: bg,
       body: Stack(
         children: [
+          // Fluid ribbon wallpaper in light mode
+          if (!isDark)
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.65,
+                child: Image.asset(
+                  'assets/images/app_background.jpg',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                ),
+              ),
+            ),
+
           // Top ambient glow
           Positioned(
             left: 0,

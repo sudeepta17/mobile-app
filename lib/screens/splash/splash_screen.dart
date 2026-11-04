@@ -173,6 +173,16 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           child: Stack(
             fit: StackFit.expand,
             children: [
+              // 0. Fluid Ribbon Background Wallpaper
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/app_background.jpg',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                ),
+              ),
+
               // 1. Concentric ambient rings pulsing behind logo mark (cx: 195, cy: 388 on 390x844)
               AnimatedBuilder(
                 animation: _glowController,

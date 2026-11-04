@@ -321,10 +321,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       backgroundColor: const Color(0xFFFFF7F0), // Soft warm peach background
       body: Stack(
         children: [
-          // 1. Organic Fluid Ribbon Background Waves
+          // 1. Exact Fluid Ribbon Background Wallpaper matching media_1793781287342_d0740728.jpg
           Positioned.fill(
-            child: CustomPaint(
-              painter: _FluidRibbonPainter(),
+            child: Image.asset(
+              'assets/images/app_background.jpg',
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
+              errorBuilder: (context, error, stackTrace) => CustomPaint(
+                painter: _FluidRibbonPainter(),
+              ),
             ),
           ),
 

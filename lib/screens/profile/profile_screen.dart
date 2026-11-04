@@ -439,6 +439,20 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: bg,
       body: Stack(
         children: [
+          // Fluid ribbon wallpaper in light mode
+          if (!isDark)
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.65,
+                child: Image.asset(
+                  'assets/images/app_background.jpg',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                ),
+              ),
+            ),
+
           // Top Ambient Glow (.glow in profile.html line 14: radial-gradient(circle at 85% 0, var(--accent-glow) 0%, transparent 65%))
           Positioned(
             left: 0,
