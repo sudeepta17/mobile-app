@@ -9,6 +9,7 @@ import '../../models/project_model.dart';
 import '../../services/service_locator.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/app_header_back_button.dart';
 import '../../widgets/common/apple_card.dart';
 import '../../widgets/common/apple_chip.dart';
 import '../../widgets/common/segmented_control.dart';
@@ -236,6 +237,10 @@ class _ProjectsListScreenState extends State<ProjectsListScreen> {
                 if (!_showSearch) _searchQuery = '';
               });
             },
+          ),
+          const Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: AppHeaderBackButton(),
           ),
         ],
       ),

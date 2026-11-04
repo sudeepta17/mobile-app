@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/app_header_back_button.dart';
 
 enum WhiteboardTool { pen, eraser, line, rectangle }
 
@@ -138,6 +139,10 @@ class _WhiteboardScreenState extends State<WhiteboardScreen> {
           IconButton(
             icon: const Icon(CupertinoIcons.trash),
             onPressed: _clearCanvas,
+          ),
+          const Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: AppHeaderBackButton(),
           ),
         ],
       ),

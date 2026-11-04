@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../models/user_model.dart';
 import '../../state/auth_state.dart';
 import '../../state/theme_state.dart';
+import '../../widgets/app_header_back_button.dart';
 
 /// Profile & Settings Screen mirroring profile.html & styles.css
 class ProfileScreen extends StatelessWidget {
@@ -468,6 +469,12 @@ class ProfileScreen extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
               padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 104),
               children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: const AppHeaderBackButton(),
+                ),
+                const SizedBox(height: 8),
+
                 // 1. Header (profile.html line 16: <header class="col" style="align-items:center;gap:4px">)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,

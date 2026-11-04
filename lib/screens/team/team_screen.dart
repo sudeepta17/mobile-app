@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../widgets/app_header_back_button.dart';
 
 /// Team Member Model matching team.html line 24:
 /// ['Team Member 1', 'Team Lead', 'Online']
@@ -150,29 +151,37 @@ class _TeamScreenState extends State<TeamScreen> {
               padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 104),
               children: [
                 // 1. Header (team.html line 15: <header class="col" style="gap:2px"><h1>Team</h1><p class="sub" id="count">Team Alpha</p></header>)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      'Team',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: textPrimary,
-                        height: 1.2,
-                        fontFamily: 'Poppins',
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Team',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: textPrimary,
+                              height: 1.2,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            countText,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: textMuted,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      countText,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        color: textMuted,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
+                    const AppHeaderBackButton(),
                   ],
                 ),
                 const SizedBox(height: 18),

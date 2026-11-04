@@ -8,6 +8,7 @@ import '../../models/holiday_model.dart';
 import '../../services/service_locator.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/app_header_back_button.dart';
 import '../../widgets/common/apple_card.dart';
 import '../../widgets/common/apple_chip.dart';
 
@@ -78,6 +79,12 @@ class _HolidaysScreenState extends State<HolidaysScreen> {
             fontFamily: 'Poppins',
           ),
         ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: AppHeaderBackButton(),
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CupertinoActivityIndicator(radius: 14))

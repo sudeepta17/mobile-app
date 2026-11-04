@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/app_header_back_button.dart';
 
 /// Task Item Data Model matching tasks.html line 23:
 /// { t: 'Submit weekly timesheet', m: 'Due today, 5:00 PM', s: 'Pending' }
@@ -361,6 +362,8 @@ class _MyTasksScreenState extends State<MyTasksScreen> {
                         ],
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    const AppHeaderBackButton(),
                   ],
                 ),
                 const SizedBox(height: 14),

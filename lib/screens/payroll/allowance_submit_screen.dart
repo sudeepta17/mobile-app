@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/app_header_back_button.dart';
 
 class AllowanceClaim {
   final int id;
@@ -210,6 +211,12 @@ class _AllowanceSubmitScreenState extends State<AllowanceSubmitScreen> {
             fontFamily: 'Poppins',
           ),
         ),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: AppHeaderBackButton(),
+          ),
+        ],
       ),
       body: SafeArea(
         child: ListView(

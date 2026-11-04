@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/app_header_back_button.dart';
 
 enum BlockerCategory { blocker, question, approvals, task, idea }
 
@@ -766,6 +767,8 @@ class _BlockersScreenState extends State<BlockersScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  const AppHeaderBackButton(),
                 ],
               ),
             ),

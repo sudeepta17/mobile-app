@@ -16,6 +16,7 @@ import 'package:essane_management/screens/tools/notes_screen.dart';
 import 'package:essane_management/screens/tools/whiteboard_screen.dart';
 import 'package:essane_management/state/auth_state.dart';
 import 'package:essane_management/widgets/app_drawer.dart';
+import 'package:essane_management/widgets/app_header_back_button.dart';
 
 void main() {
   Widget createTestWidget(Widget child, {AuthState? authState}) {
@@ -103,6 +104,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Blockers'), findsOneWidget);
+    expect(find.byType(AppHeaderBackButton), findsOneWidget);
     expect(find.text('New Blocker'), findsOneWidget);
     expect(find.textContaining('Waiting ('), findsOneWidget);
     expect(find.textContaining('Replied ('), findsOneWidget);

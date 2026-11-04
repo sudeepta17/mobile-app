@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/app_drawer.dart';
+import '../../widgets/app_header_back_button.dart';
 
 class JsonCrackScreen extends StatefulWidget {
   final AuthState? authState;
@@ -156,6 +157,10 @@ class _JsonCrackScreenState extends State<JsonCrackScreen> with SingleTickerProv
             icon: const Icon(CupertinoIcons.doc_on_clipboard),
             tooltip: 'Copy',
             onPressed: _copyJson,
+          ),
+          const Padding(
+            padding: EdgeInsets.only(right: 12),
+            child: AppHeaderBackButton(),
           ),
         ],
         bottom: TabBar(

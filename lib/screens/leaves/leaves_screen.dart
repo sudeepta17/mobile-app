@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../services/service_locator.dart';
+import '../../widgets/app_header_back_button.dart';
 import 'apply_leave_modal.dart';
 
 /// Data structure matching reqs = [['Casual leave', '20 – 21 Oct 2026 · 2 days', 'Approved'], ...] in leave.html
@@ -151,29 +152,37 @@ class _LeavesScreenState extends State<LeavesScreen> {
               padding: const EdgeInsets.only(left: 20, right: 20, top: 16, bottom: 104),
               children: [
                 // 1. Header (leave.html line 15: <header class="col" style="gap:2px"><h1>Leave</h1><p class="sub">Balance and requests</p></header>)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      'Leave',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: textPrimary,
-                        height: 1.2,
-                        fontFamily: 'Poppins',
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Leave',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: textPrimary,
+                              height: 1.2,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Balance and requests',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: textMuted,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Balance and requests',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        color: textMuted,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
+                    const AppHeaderBackButton(),
                   ],
                 ),
                 const SizedBox(height: 18),
