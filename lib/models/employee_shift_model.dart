@@ -191,3 +191,4 @@ class EmployeeShiftRecord {
     return null;
   }
 }
+
